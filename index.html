@@ -126,10 +126,15 @@ const { useState, useEffect, useMemo, useCallback, useRef } = React;
 //  แก้ 2 บรรทัดด้านล่างให้ตรงกับ project ของคุณ
 //  (Supabase Dashboard → Settings → API)
 // ═══════════════════════════════════════════════════════════════
-const SUPA_URL = 'https://YOUR_PROJECT_ID.supabase.co';
-const SUPA_KEY = 'YOUR_ANON_KEY_HERE';
+// อ่าน config จาก localStorage (กรอกครั้งแรกผ่านหน้า Setup)
+const _savedUrl = localStorage.getItem('lg_supa_url') || '';
+const _savedKey = localStorage.getItem('lg_supa_key') || '';
+const SUPA_URL = _savedUrl;
+const SUPA_KEY = _savedKey;
 
-const _sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+// ถ้ายังไม่มี config จะไป SetupPage แทน
+const _hasConfig = _savedUrl && _savedUrl.includes('supabase.co') && _savedKey.length > 20;
+const _sb = _hasConfig ? window.supabase.createClient(SUPA_URL, SUPA_KEY) : null;
 
 let _db = { shop:null, branch:null, branches:[], services:[],
              customers:[], bills:[], quickNotes:[], users:[], session:null };
@@ -303,6 +308,92 @@ function rtSubscribe(cb) {
 function rtUnsubscribe() { if(_rt){_sb.removeChannel(_rt);_rt=null;} }
 
 
+// ── SetupPage: กรอก Supabase URL + Key ครั้งแรก ──────────────────────────
+function SetupPage() {
+  const [url, setUrl] = useState('');
+  const [key, setKey] = useState('');
+  const [err, setErr] = useState('');
+
+  function handleSave(e) {
+    e.preventDefault();
+    if (!url.includes('supabase.co')) { setErr('URL ต้องมี .supabase.co'); return; }
+    if (key.length < 100) { setErr('Anon Key สั้นเกินไป — ตรวจสอบให้แน่ใจว่า copy ครบ'); return; }
+    localStorage.setItem('lg_supa_url', url.trim());
+    localStorage.setItem('lg_supa_key', key.trim());
+    window.location.reload();
+  }
+
+  return (
+    <div style={{minHeight:'100vh',background:'linear-gradient(135deg,#EEF2FF,#E0E7FF)',
+      display:'flex',alignItems:'center',justifyContent:'center',padding:16}}>
+      <div style={{background:'#fff',borderRadius:20,border:'1px solid #E5E7EB',
+        padding:28,width:'100%',maxWidth:440,boxShadow:'0 4px 20px rgba(0,0,0,.08)'}}>
+        <div style={{textAlign:'center',marginBottom:24}}>
+          <div style={{width:56,height:56,borderRadius:14,background:'#4F63D2',
+            display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 12px'}}>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round">
+              <rect x="2" y="2" width="20" height="20" rx="3"/>
+              <circle cx="12" cy="13" r="4"/>
+              <circle cx="8" cy="7" r="1"/>
+            </svg>
+          </div>
+          <h1 style={{fontSize:22,fontWeight:700,color:'#111827'}}>LaundryGo</h1>
+          <p style={{fontSize:13,color:'#9CA3AF',marginTop:4}}>ตั้งค่าการเชื่อมต่อ Supabase</p>
+        </div>
+
+        <div style={{background:'#FFF7ED',border:'1px solid #FDE68A',borderRadius:10,
+          padding:'10px 14px',marginBottom:20,fontSize:12,color:'#92400E',lineHeight:1.6}}>
+          <p style={{fontWeight:600,marginBottom:4}}>📋 วิธีหา URL และ Key:</p>
+          <p>1. ไปที่ <strong>supabase.com</strong> → เข้า project ของคุณ</p>
+          <p>2. คลิก <strong>Settings</strong> (ซ้ายล่าง) → <strong>API</strong></p>
+          <p>3. Copy <strong>Project URL</strong> และ <strong>anon public</strong></p>
+        </div>
+
+        <form onSubmit={handleSave} style={{display:'flex',flexDirection:'column',gap:14}}>
+          <div>
+            <label style={{fontSize:12,color:'#6B7280',marginBottom:5,display:'block',fontWeight:500}}>
+              Project URL
+            </label>
+            <input value={url} onChange={e=>setUrl(e.target.value)} required
+              placeholder="https://xxxxxxxxxx.supabase.co"
+              style={{width:'100%',border:'1px solid #E5E7EB',borderRadius:10,padding:'9px 13px',
+                fontSize:13,fontFamily:'monospace',outline:'none',boxSizing:'border-box'}}
+              onFocus={e=>e.target.style.borderColor='#4F63D2'}
+              onBlur={e=>e.target.style.borderColor='#E5E7EB'}/>
+          </div>
+          <div>
+            <label style={{fontSize:12,color:'#6B7280',marginBottom:5,display:'block',fontWeight:500}}>
+              Anon Public Key
+            </label>
+            <textarea value={key} onChange={e=>setKey(e.target.value)} required rows={4}
+              placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+              style={{width:'100%',border:'1px solid #E5E7EB',borderRadius:10,padding:'9px 13px',
+                fontSize:11,fontFamily:'monospace',outline:'none',resize:'vertical',boxSizing:'border-box'}}
+              onFocus={e=>e.target.style.borderColor='#4F63D2'}
+              onBlur={e=>e.target.style.borderColor='#E5E7EB'}/>
+            <p style={{fontSize:11,color:'#9CA3AF',marginTop:4}}>key ยาวมาก ประมาณ 200+ ตัวอักษร ต้อง copy ให้ครบ</p>
+          </div>
+          {err && (
+            <div style={{background:'#FEF2F2',border:'1px solid #FECACA',borderRadius:8,
+              padding:'8px 12px',fontSize:12,color:'#DC2626'}}>{err}</div>
+          )}
+          <button type="submit"
+            style={{background:'#4F63D2',color:'#fff',border:'none',borderRadius:10,
+              padding:'11px',fontSize:14,fontWeight:600,cursor:'pointer'}}>
+            บันทึกและเชื่อมต่อ
+          </button>
+        </form>
+
+        <p style={{textAlign:'center',fontSize:11,color:'#9CA3AF',marginTop:16,lineHeight:1.6}}>
+          ข้อมูลนี้จะถูกเก็บใน browser ของเครื่องนี้เท่านั้น<br/>
+          ไม่ได้ส่งไปที่ใด
+        </p>
+      </div>
+    </div>
+  );
+}
+
+
 function App() {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -312,6 +403,9 @@ function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [tick, setTick] = useState(0);
   const refresh = useCallback(() => setTick(t => t+1), []);
+
+  // ถ้ายังไม่ได้ตั้งค่า Supabase → แสดงหน้า Setup ก่อนเลย (ไม่ต้องรอ useEffect)
+  if (!_hasConfig) return <SetupPage/>;
 
   useEffect(() => {
     _sb.auth.getSession().then(async ({ data: { session: s } }) => {
@@ -723,7 +817,7 @@ function BillsPage({ nav, session, tick }) {
               onMouseEnter={e=>e.currentTarget.style.background='#FAFAFA'}
               onMouseLeave={e=>e.currentTarget.style.background=''}>
               <div style={{flex:1,minWidth:0}}>
-                <div style={{display:'flex',alignItems:'center',gap:6,flexWrap:'wrap'}}>
+<div style={{display:'flex',alignItems:'center',gap:6,flexWrap:'wrap'}}>
                   <span style={{fontWeight:600,fontSize:13}}>{b.billNo}</span>
                   <span className={`badge ${s?.badge}`}>{s?.label}</span>
                   <span className={`badge ${b.paymentStatus==='paid'?'badge-green':'badge-red'}`}>
@@ -1584,7 +1678,8 @@ function BillDetailPage({ nav, session, billId, onUpdate }) {
           </tbody>
           <tfoot>
             <tr style={{borderTop:'2px solid #F3F4F6'}}>
-              <td colSpan={3} style={{paddingTop:12,fontWeight:600,color:'#374151'}}>ยอดรวม</td>
+              <td colSpan={3} style={{paddingTop:12,fontWe
+ight:600,color:'#374151'}}>ยอดรวม</td>
               <td style={{textAlign:'right',paddingTop:12,fontSize:20,fontWeight:700}}>฿{fmt(bill.totalAmount)}</td>
             </tr>
           </tfoot>
@@ -2300,3 +2395,4 @@ ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
 </body>
 </html>
+                
