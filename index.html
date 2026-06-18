@@ -1,0 +1,2302 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LaundryGo</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7/babel.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:#F1F3F8;color:#1A1D23;font-size:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 16px;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s;outline:none}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:#4F63D2;color:#fff}.btn-primary:hover{background:#3D50C0}
+.btn-secondary{background:#fff;color:#374151;border:1px solid #E5E7EB}.btn-secondary:hover{background:#F9FAFB}
+.btn-danger{background:#DC2626;color:#fff}.btn-danger:hover{background:#B91C1C}
+.btn-sm{padding:6px 12px;font-size:12px;border-radius:8px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.card{background:#fff;border-radius:16px;border:1px solid #F0F0F0;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.input{width:100%;border:1px solid #E5E7EB;border-radius:10px;padding:9px 13px;font-size:13px;font-family:inherit;background:#fff;color:#1A1D23;outline:none;transition:all .15s}
+.input:focus{border-color:#4F63D2;box-shadow:0 0 0 3px rgba(79,99,210,.12)}
+.input::placeholder{color:#9CA3AF}
+textarea.input{resize:vertical;min-height:72px}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500}
+.badge-gray{background:#F3F4F6;color:#6B7280}
+.badge-blue{background:#EFF6FF;color:#1D4ED8}
+.badge-orange{background:#FFF7ED;color:#C2410C}
+.badge-yellow{background:#FEFCE8;color:#A16207}
+.badge-indigo{background:#EEF2FF;color:#4338CA}
+.badge-green{background:#F0FDF4;color:#15803D}
+.badge-teal{background:#F0FDFA;color:#0F766E}
+.badge-red{background:#FEF2F2;color:#DC2626}
+.badge-purple{background:#FAF5FF;color:#7C3AED}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer;text-decoration:none;color:#6B7280;transition:all .15s;border:none;background:transparent;width:100%}
+.nav-item:hover{background:#F9FAFB;color:#111827}
+.nav-item.active{background:#EEF2FF;color:#4338CA;font-weight:600}
+.label{font-size:11px;color:#6B7280;margin-bottom:5px;display:block}
+.divider{border:none;border-top:1px solid #F3F4F6}
+.stat-card{background:#F8F9FC;border-radius:12px;padding:14px}
+.page{padding:20px;max-width:800px}
+.sidebar{width:220px;min-width:220px;height:100vh;background:#fff;border-right:1px solid #F0F0F0;display:flex;flex-direction:column;position:fixed;left:0;top:0;z-index:10}
+.main-area{margin-left:220px;min-height:100vh;overflow-y:auto}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:20;display:none}
+@media(max-width:700px){.sidebar{transform:translateX(-100%);transition:transform .2s}.sidebar.open{transform:translateX(0)}.main-area{margin-left:0}.overlay.open{display:block}}
+.topbar{display:none;align-items:center;gap:12px;padding:12px 16px;background:#fff;border-bottom:1px solid #F0F0F0;position:sticky;top:0;z-index:9}
+@media(max-width:700px){.topbar{display:flex}}
+.table{width:100%;border-collapse:collapse}
+.table th{font-size:11px;color:#9CA3AF;font-weight:500;text-align:left;padding:6px 0;border-bottom:1px solid #F3F4F6}
+.table td{padding:10px 0;border-bottom:1px solid #F9FAFB;font-size:13px;color:#374151;vertical-align:top}
+.table tr:last-child td{border-bottom:none}
+.notice{padding:10px 14px;border-radius:10px;font-size:13px}
+.notice-amber{background:#FFFBEB;border:1px solid #FDE68A;color:#92400E}
+.notice-red{background:#FEF2F2;border:1px solid #FECACA;color:#991B1B}
+.notice-green{background:#F0FDF4;border:1px solid #BBF7D0;color:#15803D}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:600px){.grid4{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}}
+.row{display:flex;align-items:center;gap:10px}
+.gap-2{gap:8px}
+.gap-3{gap:12px}
+.mt-1{margin-top:4px}
+.mt-2{margin-top:8px}
+.mt-3{margin-top:12px}
+.mt-4{margin-top:16px}
+.mb-1{margin-bottom:4px}
+.mb-2{margin-bottom:8px}
+.mb-3{margin-bottom:12px}
+.mb-4{margin-bottom:16px}
+.p-4{padding:16px}
+.p-3{padding:12px}
+.text-xs{font-size:11px}
+.text-sm{font-size:13px}
+.text-lg{font-size:18px}
+.text-xl{font-size:22px}
+.font-bold{font-weight:700}
+.font-semibold{font-weight:600}
+.font-medium{font-weight:500}
+.text-gray{color:#9CA3AF}
+.text-primary{color:#4F63D2}
+.text-green{color:#15803D}
+.text-red{color:#DC2626}
+.text-amber{color:#D97706}
+.flex{display:flex}
+.flex-1{flex:1}
+.items-center{align-items:center}
+.justify-between{justify-content:space-between}
+.justify-end{justify-content:flex-end}
+.space-y>*+*{margin-top:16px}
+.space-y-sm>*+*{margin-top:10px}
+.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.avatar{width:36px;height:36px;border-radius:50%;background:#EEF2FF;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#4338CA;flex-shrink:0}
+.icon-btn{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;cursor:pointer;border:none;background:transparent;color:#9CA3AF;transition:all .15s}
+.icon-btn:hover{background:#F3F4F6;color:#374151}
+.icon-btn.danger:hover{background:#FEF2F2;color:#DC2626}
+.dropdown{position:absolute;top:calc(100% + 4px);left:0;background:#fff;border:1px solid #E5E7EB;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:30;min-width:160px;overflow:hidden}
+.dropdown-item{display:flex;align-items:center;gap:8px;padding:10px 14px;font-size:13px;cursor:pointer;transition:background .1s;color:#374151;width:100%;border:none;background:transparent;text-align:left}
+.dropdown-item:hover{background:#F9FAFB}
+.relative{position:relative}
+.autocomplete{position:absolute;top:calc(100% + 2px);left:0;right:0;background:#fff;border:1px solid #E5E7EB;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:30;overflow:hidden}
+.autocomplete-item{padding:10px 14px;font-size:13px;cursor:pointer;display:flex;justify-content:space-between}
+.autocomplete-item:hover{background:#F9FAFB}
+.login-bg{min-height:100vh;background:linear-gradient(135deg,#EEF2FF 0%,#E0E7FF 100%);display:flex;align-items:center;justify-content:center;padding:16px}
+.login-card{background:#fff;border-radius:20px;border:1px solid #E5E7EB;padding:28px;width:100%;max-width:360px;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+.logo-circle{width:56px;height:56px;border-radius:14px;background:#4F63D2;display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+.tab-group{display:flex;gap:2px;padding:4px;background:#F3F4F6;border-radius:12px;width:fit-content}
+.tab{padding:6px 16px;border-radius:9px;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;border:none;background:transparent;color:#6B7280}
+.tab.active{background:#fff;color:#111827;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.print-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid #E5E7EB;background:#fff;color:#374151;transition:all .15s}
+.print-btn:hover{background:#F9FAFB}
+
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+
+const { useState, useEffect, useMemo, useCallback, useRef } = React;
+
+// ═══════════════════════════════════════════════════════════════
+//  ⚠️  ตั้งค่า Supabase  ⚠️
+//  แก้ 2 บรรทัดด้านล่างให้ตรงกับ project ของคุณ
+//  (Supabase Dashboard → Settings → API)
+// ═══════════════════════════════════════════════════════════════
+const SUPA_URL = 'https://YOUR_PROJECT_ID.supabase.co';
+const SUPA_KEY = 'YOUR_ANON_KEY_HERE';
+
+const _sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+
+let _db = { shop:null, branch:null, branches:[], services:[],
+             customers:[], bills:[], quickNotes:[], users:[], session:null };
+
+function loadDB() { return {..._db}; }
+function saveDB() {}
+function mutateDB(fn) { const s={..._db}; fn(s); _db=s; return s; }
+
+const _mapBill = b => ({
+  id:b.id, billNo:b.bill_no, shopId:b.shop_id, branchId:b.branch_id,
+  customerId:b.customer_id, customerName:b.customer_name||'',
+  customerPhone:b.customer_phone||'', customerAddress:b.customer_address||'',
+  customerLineId:b.customer_line_id||'', items:b.items||[],
+  totalAmount:Number(b.total_amount||0), paidAmount:Number(b.paid_amount||0),
+  paymentStatus:b.payment_status||'unpaid', paymentMethod:b.payment_method||'credit',
+  workStatus:b.work_status||'received', receivedDate:b.received_date||'',
+  dueDate:b.due_date||'', note:b.note||'', images:b.images||[], createdAt:b.created_at,
+});
+
+async function bootstrapData(s) {
+  const uid = s.user.id;
+  let shop = null;
+  const {data:owned} = await _sb.from('shops').select('*').eq('owner_id',uid).maybeSingle();
+  if (owned) { shop=owned; }
+  else {
+    const {data:sl} = await _sb.from('branch_staff').select('shop_id,shops(*)').eq('user_id',uid).eq('active',true).maybeSingle();
+    if (sl?.shops) shop=sl.shops;
+  }
+  if (!shop) throw new Error('ไม่พบข้อมูลร้านค้า กรุณาติดต่อผู้ดูแลระบบ');
+  const [{data:branches=[]},{data:self}] = await Promise.all([
+    _sb.from('branches').select('*').eq('shop_id',shop.id).eq('active',true),
+    _sb.from('branch_staff').select('*').eq('user_id',uid).eq('active',true).maybeSingle(),
+  ]);
+  const myBranch = branches.find(b=>b.id===self?.branch_id)||branches[0]||null;
+  const [sR,cR,bR,nR,uR] = await Promise.all([
+    _sb.from('services').select('*').eq('shop_id',shop.id).order('sort_order'),
+    _sb.from('customers').select('*').eq('shop_id',shop.id).order('name'),
+    _sb.from('bills').select('*').eq('shop_id',shop.id).order('created_at',{ascending:false}).limit(300),
+    _sb.from('quick_notes').select('*').eq('shop_id',shop.id).order('sort_order'),
+    _sb.from('branch_staff').select('*').eq('shop_id',shop.id),
+  ]);
+  _db = {
+    shop:{id:shop.id,name:shop.name||'',phone:shop.phone||'',address:shop.address||'',
+      openTime:shop.open_time||'08:00',closeTime:shop.close_time||'20:00',
+      logo:shop.logo_url||null,receiptNote:shop.receipt_note||'',
+      printerSize:shop.printer_size||'80',printerConn:shop.printer_conn||'browser'},
+    branch:myBranch?{id:myBranch.id,name:myBranch.name}:null,
+    branches,
+    session:{userId:uid,role:self?.role||'owner',
+      name:self?.name||s.user.email||'',email:s.user.email||'',
+      shopId:shop.id,branchId:myBranch?.id||null},
+    services:(sR.data||[]).map(s=>({id:s.id,name:s.name,icon:s.icon||'washer',
+      color:s.color||'#DBEAFE',iconColor:s.icon_color||'#1E40AF',unit:s.unit||'kg',
+      hasOptions:s.has_options||false,price:Number(s.price||0),options:s.options||[],active:s.active})),
+    customers:(cR.data||[]).map(c=>({id:c.id,name:c.name,phone:c.phone||'',
+      address:c.address||'',lineId:c.line_id||'',note:c.note||'',shopId:c.shop_id})),
+    bills:(bR.data||[]).map(_mapBill),
+    quickNotes:(nR.data||[]).map(n=>({id:n.id,text:n.text})),
+    users:(uR.data||[]).map(u=>({id:u.id,name:u.name,email:u.email,
+      role:u.role,branchId:u.branch_id,shopId:u.shop_id,active:u.active})),
+  };
+  return _db;
+}
+
+async function sbSignIn(email,pw) {
+  const {data,error}=await _sb.auth.signInWithPassword({email,password:pw});
+  if(error) return {ok:false,error:'อีเมลหรือรหัสผ่านไม่ถูกต้อง'};
+  try { await bootstrapData(data.session); return {ok:true,session:_db.session}; }
+  catch(e) { return {ok:false,error:e.message||'โหลดข้อมูลไม่สำเร็จ'}; }
+}
+async function sbSignOut() {
+  await _sb.auth.signOut();
+  _db={shop:null,branch:null,branches:[],services:[],customers:[],bills:[],quickNotes:[],users:[],session:null};
+}
+async function sbResetPw(email) {
+  const {error}=await _sb.auth.resetPasswordForEmail(email,{redirectTo:window.location.href});
+  return error?{ok:false,error:error.message}:{ok:true};
+}
+async function sbCreateBill(data) {
+  const shopId=_db.session?.shopId, branchId=_db.session?.branchId;
+  const {data:no}=await _sb.rpc('next_bill_no',{p_shop_id:shopId});
+  const {data:bill,error}=await _sb.from('bills').insert({
+    shop_id:shopId,branch_id:branchId,bill_no:no||('LG-'+Date.now()),
+    customer_id:data.customerId||null,customer_name:data.customerName||'',
+    customer_phone:data.customerPhone||'',customer_address:data.customerAddress||'',
+    customer_line_id:data.customerLineId||'',items:data.items||[],
+    total_amount:data.totalAmount||0,paid_amount:data.paidAmount||0,
+    payment_status:data.paymentStatus||'unpaid',payment_method:data.paymentMethod||'credit',
+    work_status:data.workStatus||'received',
+    received_date:data.receivedDate||new Date().toISOString().slice(0,10),
+    due_date:data.dueDate||null,note:data.note||'',images:data.images||[],
+    created_by:_db.session?.userId,
+  }).select().single();
+  if(error) throw error;
+  const mapped=_mapBill(bill);
+  _db.bills=[mapped,..._db.bills];
+  return mapped;
+}
+async function sbUpdateBill(id,upd) {
+  const p={};
+  if(upd.workStatus!==undefined) p.work_status=upd.workStatus;
+  if(upd.paymentStatus!==undefined) p.payment_status=upd.paymentStatus;
+  if(upd.paidAmount!==undefined) p.paid_amount=upd.paidAmount;
+  if(upd.paymentMethod!==undefined) p.payment_method=upd.paymentMethod;
+  const {data:b,error}=await _sb.from('bills').update(p).eq('id',id).select().single();
+  if(error) throw error;
+  const mapped=_mapBill(b);
+  _db.bills=_db.bills.map(x=>x.id===id?mapped:x);
+  return mapped;
+}
+async function sbDeleteBill(id) {
+  const {error}=await _sb.from('bills').delete().eq('id',id);
+  if(error) throw error;
+  _db.bills=_db.bills.filter(b=>b.id!==id);
+}
+async function sbUpsertCustomer(name,phone,address,lineId) {
+  const shopId=_db.session?.shopId;
+  let c=phone?_db.customers.find(x=>x.phone===phone):null;
+  if(!c) c=_db.customers.find(x=>x.name===name);
+  if(!c) {
+    const {data,error}=await _sb.from('customers')
+      .insert({shop_id:shopId,name,phone:phone||'',address:address||'',line_id:lineId||''})
+      .select().single();
+    if(error) throw error;
+    c={id:data.id,name:data.name,phone:data.phone||'',address:data.address||'',lineId:data.line_id||'',shopId};
+    _db.customers=[..._db.customers,c];
+  } else {
+    await _sb.from('customers').update({name,phone:phone||'',address:address||'',line_id:lineId||''}).eq('id',c.id);
+    _db.customers=_db.customers.map(x=>x.id===c.id?{...x,name,phone,address,lineId}:x);
+  }
+  return c;
+}
+async function sbSaveService(svc) {
+  const shopId=_db.session?.shopId;
+  const p={shop_id:shopId,name:svc.name,icon:svc.icon,color:svc.color,
+    icon_color:svc.iconColor,unit:svc.unit,has_options:svc.hasOptions||false,
+    price:svc.price||0,options:svc.options||[],active:svc.active!==false};
+  if(svc.id){
+    await _sb.from('services').update(p).eq('id',svc.id);
+    _db.services=_db.services.map(s=>s.id===svc.id?{...svc}:s);
+  } else {
+    const {data,error}=await _sb.from('services').insert(p).select().single();
+    if(error) throw error;
+    _db.services=[..._db.services,{id:data.id,...svc}];
+  }
+  return _db.services;
+}
+async function sbDeleteService(id) {
+  await _sb.from('services').delete().eq('id',id);
+  _db.services=_db.services.filter(s=>s.id!==id);
+}
+async function sbSaveShop(data) {
+  await _sb.from('shops').update({name:data.name,phone:data.phone,address:data.address,
+    open_time:data.openTime,close_time:data.closeTime,receipt_note:data.receiptNote,
+    printer_size:data.printerSize,printer_conn:data.printerConn}).eq('id',_db.session?.shopId);
+  _db.shop={..._db.shop,...data};
+  return _db.shop;
+}
+let _rt=null;
+function rtSubscribe(cb) {
+  if(_rt||!_db.session?.shopId) return;
+  _rt=_sb.channel('bills-'+_db.session.shopId)
+    .on('postgres_changes',{event:'*',schema:'public',table:'bills',
+      filter:'shop_id=eq.'+_db.session.shopId},
+      async()=>{
+        const {data}=await _sb.from('bills').select('*').eq('shop_id',_db.session.shopId)
+          .order('created_at',{ascending:false}).limit(300);
+        if(data){_db.bills=data.map(_mapBill); cb&&cb();}
+      }).subscribe();
+}
+function rtUnsubscribe() { if(_rt){_sb.removeChannel(_rt);_rt=null;} }
+
+
+function App() {
+  const [session, setSession] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [authErr, setAuthErr] = useState('');
+  const [page, setPage] = useState('dashboard');
+  const [pageParams, setPageParams] = useState({});
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [tick, setTick] = useState(0);
+  const refresh = useCallback(() => setTick(t => t+1), []);
+
+  useEffect(() => {
+    _sb.auth.getSession().then(async ({ data: { session: s } }) => {
+      if (s) { try { await bootstrapData(s); setSession(_db.session); rtSubscribe(refresh); } catch(e){} }
+      setLoading(false);
+    });
+    return () => rtUnsubscribe();
+  }, []);
+
+  function nav(p, params={}) { setPage(p); setPageParams(params); setSidebarOpen(false); }
+
+  async function doLogin(email, pw) {
+    setAuthErr('');
+    const res = await sbSignIn(email, pw);
+    if (res.ok) { setSession(res.session); rtSubscribe(refresh); }
+    else setAuthErr(res.error);
+  }
+  async function doLogout() {
+    rtUnsubscribe(); await sbSignOut(); setSession(null); setPage('dashboard');
+  }
+
+  if (loading) return (
+    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column',gap:14}}>
+      <style>{`@keyframes _sp{to{transform:rotate(360deg)}}`}</style>
+      <div style={{width:40,height:40,borderRadius:'50%',border:'3px solid #E5E7EB',borderTopColor:'#4F63D2',animation:'_sp .7s linear infinite'}}/>
+      <p style={{color:'#9CA3AF',fontSize:13}}>กำลังเชื่อมต่อ Supabase...</p>
+    </div>
+  );
+  if (!session) return <LoginPage onLogin={doLogin} extErr={authErr}/>;
+
+  const isOwner = session.role==='owner';
+  const NAV_ALL = [
+    {key:'dashboard',label:'ภาพรวม',Icon:HomeIcon},
+    {key:'bills',label:'บิลและงาน',Icon:FileIcon},
+    {key:'customers',label:'ลูกค้า',Icon:UsersIcon},
+    {key:'services',label:'บริการ/ราคา',Icon:WrenchIcon},
+    {key:'reports',label:'รายงาน',Icon:ChartIcon},
+    {key:'users',label:'พนักงาน',Icon:UserCogIcon},
+    {key:'settings',label:'ตั้งค่าร้าน',Icon:GearIcon},
+  ];
+  const navItems = isOwner ? NAV_ALL : NAV_ALL.slice(0,3);
+
+  const Sidebar = () => (
+    <div className="sidebar" style={sidebarOpen?{transform:'translateX(0)'}:{}}>
+      <div style={{padding:'18px 16px 14px',borderBottom:'1px solid #F0F0F0',display:'flex',alignItems:'center',gap:10}}>
+        <div style={{width:32,height:32,borderRadius:9,background:'#4F63D2',display:'flex',alignItems:'center',justifyContent:'center'}}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><rect x="2" y="2" width="20" height="20" rx="3"/><circle cx="12" cy="13" r="4"/><circle cx="8" cy="7" r="1"/></svg>
+        </div>
+        <div style={{flex:1,minWidth:0}}>
+          <p style={{fontWeight:700,fontSize:16,color:'#111827'}}>LaundryGo</p>
+          {_db.branch&&<p style={{fontSize:10,color:'#9CA3AF',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{_db.branch.name}</p>}
+        </div>
+      </div>
+      <nav style={{flex:1,padding:10,overflowY:'auto'}}>
+        {navItems.map(({key,label,Icon})=>(
+          <button key={key} onClick={()=>nav(key)} className={`nav-item ${page===key?'active':''}`}>
+            <Icon/> {label}
+          </button>
+        ))}
+      </nav>
+      <div style={{borderTop:'1px solid #F0F0F0',padding:10}}>
+        <div style={{display:'flex',alignItems:'center',gap:10,padding:'8px 12px',marginBottom:4}}>
+          <div className="avatar" style={{width:30,height:30,fontSize:12}}>{(session.name||'?')[0]}</div>
+          <div style={{flex:1,minWidth:0}}>
+            <p style={{fontSize:12,fontWeight:500,color:'#111',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{session.name}</p>
+            <p style={{fontSize:11,color:'#9CA3AF'}}>{session.role==='owner'?'เจ้าของร้าน':'พนักงาน'}</p>
+          </div>
+        </div>
+        <button onClick={doLogout} className="nav-item" style={{color:'#EF4444'}}><LogOutIcon/> ออกจากระบบ</button>
+      </div>
+    </div>
+  );
+
+  const pages = {
+    dashboard:     <DashboardPage   nav={nav} session={session} tick={tick}/>,
+    bills:         <BillsPage       nav={nav} session={session} tick={tick} params={pageParams}/>,
+    'bill-new':    <NewBillPage     nav={nav} session={session} tick={tick}
+                     onSave={async(id)=>{ refresh(); nav('bill-detail',{billId:id}); }}/>,
+    'bill-detail': <BillDetailPage  nav={nav} session={session} billId={pageParams.billId} onUpdate={refresh}/>,
+    customers:     <CustomersPage   nav={nav} session={session} tick={tick}/>,
+    services:  isOwner?<ServicesPage nav={nav} tick={tick}/>:null,
+    reports:   isOwner?<ReportsPage  nav={nav} tick={tick}/>:null,
+    settings:  isOwner?<SettingsPage nav={nav}/>:null,
+    users:     isOwner?<UsersPage    nav={nav} session={session} tick={tick}/>:null,
+  };
+
+  return (
+    <div>
+      {sidebarOpen&&<div className="overlay open" onClick={()=>setSidebarOpen(false)}/>}
+      <Sidebar/>
+      <div className="main-area">
+        <div className="topbar">
+          <button onClick={()=>setSidebarOpen(true)} style={{border:'none',background:'transparent',cursor:'pointer',color:'#374151',padding:4,display:'flex'}}><MenuIcon/></button>
+          <div style={{display:'flex',alignItems:'center',gap:8}}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4F63D2" strokeWidth="2" strokeLinecap="round"><rect x="2" y="2" width="20" height="20" rx="3"/><circle cx="12" cy="13" r="4"/></svg>
+            <span style={{fontWeight:700,color:'#111827'}}>LaundryGo</span>
+          </div>
+        </div>
+        <div className="page">{pages[page]||pages['dashboard']}</div>
+      </div>
+    </div>
+  );
+}
+
+// ── Login Page ───────────────────────────────────────────────────────────────
+function LoginPage({ onLogin, extErr }) {
+  const [mode, setMode] = useState('login');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [newPw, setNewPw] = useState('');
+  const [showPw, setShowPw] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [msg, setMsg] = useState('');
+
+  async function handleLogin(e) {
+    e.preventDefault(); setError(''); setLoading(true);
+    await onLogin(email.trim(), password);
+    setLoading(false);
+  }
+  useEffect(() => { if (extErr) setError(extErr); }, [extErr]);
+  async function handleForgot(e) {
+    e.preventDefault(); setError(''); setLoading(true);
+    const res = await sbResetPw(email.trim());
+    setLoading(false);
+    if (res.ok) { setMsg('ส่งลิงก์รีเซ็ตไปที่อีเมลแล้ว'); setMode('sent'); }
+    else setError('ไม่สามารถส่งอีเมลได้ กรุณาลองใหม่');
+  }
+  function handleReset(e) {
+    e.preventDefault();
+    setMsg('กรุณาใช้ลิงก์ในอีเมลเพื่อตั้งรหัสผ่านใหม่'); setMode('login');
+  }
+
+  return (
+    <div className="login-bg">
+      <div className="login-card">
+        <div style={{textAlign:'center',marginBottom:24}}>
+          <div className="logo-circle">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><rect x="2" y="2" width="20" height="20" rx="3"/><circle cx="12" cy="13" r="4"/><circle cx="8" cy="7" r="1"/><circle cx="11" cy="7" r="1"/></svg>
+          </div>
+          <h1 style={{fontSize:22,fontWeight:700,color:'#111827'}}>LaundryGo</h1>
+          <p style={{fontSize:12,color:'#9CA3AF',marginTop:2}}>ระบบจัดการร้านซักรีด</p>
+        </div>
+        {msg && <div className="notice notice-green mb-3">{msg}</div>}
+        {mode==='login' && (
+          <form onSubmit={handleLogin} className="space-y">
+            <div>
+              <label className="label">อีเมล</label>
+              <input type="email" required autoFocus value={email} onChange={e=>setEmail(e.target.value)}
+                className="input" placeholder="owner@laundrygo.com" />
+            </div>
+            <div>
+              <label className="label">รหัสผ่าน</label>
+              <div className="relative">
+                <input type={showPw?'text':'password'} required value={password} onChange={e=>setPassword(e.target.value)}
+                  className="input" placeholder="••••••••" style={{paddingRight:40}} />
+                <button type="button" onClick={()=>setShowPw(v=>!v)}
+                  style={{position:'absolute',right:10,top:'50%',transform:'translateY(-50%)',border:'none',background:'transparent',cursor:'pointer',color:'#9CA3AF',display:'flex'}}>
+                  <EyeIcon off={showPw} />
+                </button>
+              </div>
+            </div>
+            {error && <div className="notice notice-red">{error}</div>}
+            <button type="submit" disabled={loading} className="btn btn-primary" style={{width:'100%',marginTop:4}}>
+              {loading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ'}
+            </button>
+            <div style={{textAlign:'center',marginTop:10}}>
+              <button type="button" onClick={()=>{setMode('forgot');setError('');setMsg('');}}
+                style={{border:'none',background:'transparent',color:'#4F63D2',fontSize:13,cursor:'pointer'}}>
+                ลืมรหัสผ่าน?
+              </button>
+            </div>
+            <div style={{marginTop:16,paddingTop:14,borderTop:'1px solid #F3F4F6',fontSize:11,color:'#9CA3AF',lineHeight:1.6}}>
+              <p>🔑 Login ด้วย Email ที่สร้างใน Supabase Dashboard</p>
+              <p>ดูคู่มือการตั้งค่าใน SETUP.md</p>
+            </div>
+          </form>
+        )}
+        {mode==='forgot' && (
+          <form onSubmit={handleForgot} className="space-y">
+            <p style={{fontSize:13,color:'#6B7280',marginBottom:8}}>กรอกอีเมลที่ลงทะเบียนไว้</p>
+            <div>
+              <label className="label">อีเมล</label>
+              <input type="email" required autoFocus value={email} onChange={e=>setEmail(e.target.value)} className="input" />
+            </div>
+            {error && <div className="notice notice-red">{error}</div>}
+            <button type="submit" className="btn btn-primary" style={{width:'100%'}}>ยืนยัน</button>
+            <button type="button" onClick={()=>{setMode('login');setError('');}} className="btn btn-secondary" style={{width:'100%'}}>กลับ</button>
+          </form>
+        )}
+        {mode==='sent' && (
+            <div style={{textAlign:'center',padding:'8px 0'}}>
+              <p style={{fontSize:40,marginBottom:8}}>📧</p>
+              <p style={{fontWeight:600,color:'#15803D',marginBottom:6}}>ส่งลิงก์รีเซ็ตแล้ว!</p>
+              <p style={{fontSize:12,color:'#6B7280',marginBottom:14}}>ตรวจสอบ inbox ของ <b>{email}</b></p>
+              <button type="button" onClick={()=>{setMode('login');setMsg('');}}
+                className="btn btn-primary" style={{width:'100%'}}>กลับหน้า Login</button>
+            </div>
+          )}
+          {mode==='reset' && (
+          <form onSubmit={handleReset} className="space-y">
+            <div>
+              <label className="label">รหัสผ่านใหม่</label>
+              <input type="password" required autoFocus minLength={6} value={newPw} onChange={e=>setNewPw(e.target.value)}
+                className="input" placeholder="อย่างน้อย 6 ตัวอักษร" />
+            </div>
+            {error && <div className="notice notice-red">{error}</div>}
+            <button type="submit" className="btn btn-primary" style={{width:'100%'}}>บันทึกรหัสผ่านใหม่</button>
+            <button type="button" onClick={()=>{setMode('login');setError('');setMsg('');}} className="btn btn-secondary" style={{width:'100%'}}>กลับหน้าเข้าสู่ระบบ</button>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Dashboard ────────────────────────────────────────────────────────────────
+function DashboardPage({ nav, session, tick }) {
+  const db = useMemo(()=>loadDB(), [tick]);
+  const today_str = today();
+  const ym = today_str.slice(0,7);
+  const bills = db.bills;
+  const todayBills = bills.filter(b=>b.receivedDate===today_str);
+  const monthBills = bills.filter(b=>b.receivedDate?.startsWith(ym));
+  const pending = bills.filter(b=>!['ready','delivered','cancelled'].includes(b.workStatus));
+  const tTotal = todayBills.reduce((s,b)=>s+b.totalAmount,0);
+  const tPaid  = todayBills.filter(b=>b.paymentStatus==='paid').reduce((s,b)=>s+b.totalAmount,0);
+  const mTotal = monthBills.reduce((s,b)=>s+b.totalAmount,0);
+  const recent = [...bills].sort((a,b)=>b.createdAt?.localeCompare(a.createdAt)).slice(0,6);
+  const isOwner = session.role==='owner';
+  const shop = db.shop;
+
+  function handlePrintDashboard() {
+    const rows = recent.map(b=>`<tr><td>${b.billNo}</td><td>${b.customerName}</td><td class="right">฿${fmt(b.totalAmount)}</td><td>${wsMap[b.workStatus]?.label||''}</td></tr>`).join('');
+    const pendRows = pending.slice(0,10).map(b=>`<tr><td>${b.billNo}</td><td>${b.customerName}</td><td>${wsMap[b.workStatus]?.label||''}</td><td>${b.dueDate||'-'}</td></tr>`).join('');
+    openPrint(`
+      <h2>${shop.name}</h2>
+      <p class="center">ภาพรวมประจำวัน — ${today_str}</p><hr>
+      <p><b>บิลวันนี้:</b> ${todayBills.length} ใบ &nbsp;|&nbsp; <b>ยอด:</b> ฿${fmt(tTotal)}</p>
+      <p><b>ชำระแล้ว:</b> ฿${fmt(tPaid)} &nbsp;|&nbsp; <b>ค้าง:</b> ฿${fmt(tTotal-tPaid)}</p>
+      ${isOwner ? `<p><b>เดือนนี้:</b> ฿${fmt(mTotal)} (${monthBills.length} บิล)</p>` : ''}
+      <hr>
+      <p><b>งานค้างทำ (${pending.length} รายการ)</b></p>
+      <table><thead><tr><th>บิล</th><th>ลูกค้า</th><th>สถานะ</th><th>นัดรับ</th></tr></thead><tbody>${pendRows}</tbody></table>
+      <hr>
+      <p><b>บิลล่าสุด</b></p>
+      <table><thead><tr><th>บิล</th><th>ลูกค้า</th><th class="right">ยอด</th><th>สถานะ</th></tr></thead><tbody>${rows}</tbody></table>
+      <hr><p class="center">${shop.receiptNote||''}</p>
+    `);
+  }
+
+  return (
+    <div className="space-y">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 style={{fontSize:20,fontWeight:700,color:'#111827'}}>สวัสดี, {session.name} 👋</h1>
+          <p className="text-gray text-sm mt-1">{new Date().toLocaleDateString('th-TH',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</p>
+        </div>
+        <div style={{display:'flex',gap:8}}>
+          <button onClick={handlePrintDashboard} className="btn btn-secondary" style={{padding:'8px 12px'}} title="พิมพ์ภาพรวม">
+            <PrintIcon2/>
+          </button>
+          <button onClick={()=>nav('bill-new')} className="btn btn-primary">
+            <PlusIcon /> รับผ้าใหม่
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <p style={{fontSize:11,fontWeight:600,color:'#9CA3AF',textTransform:'uppercase',letterSpacing:1,marginBottom:10}}>วันนี้</p>
+        <div className="grid4">
+          <div className="stat-card"><p className="text-xs text-gray">บิลวันนี้</p><p style={{fontSize:26,fontWeight:700,color:'#111'}}>{todayBills.length}</p><p className="text-xs text-gray">ใบ</p></div>
+          <div className="stat-card"><p className="text-xs text-gray">ยอดวันนี้</p><p style={{fontSize:22,fontWeight:700,color:'#4F63D2'}}>฿{fmt(tTotal)}</p></div>
+          <div className="stat-card"><p className="text-xs text-gray">ชำระแล้ว</p><p style={{fontSize:22,fontWeight:700,color:'#15803D'}}>฿{fmt(tPaid)}</p></div>
+          <div className="stat-card"><p className="text-xs text-gray">ค้างชำระ</p><p style={{fontSize:22,fontWeight:700,color:'#DC2626'}}>฿{fmt(tTotal-tPaid)}</p></div>
+        </div>
+      </div>
+
+      {isOwner && (
+        <div className="grid2">
+          <div className="stat-card"><p className="text-xs text-gray">รายรับเดือนนี้</p><p style={{fontSize:22,fontWeight:700,color:'#111'}}>฿{fmt(mTotal)}</p><p className="text-xs text-gray">{monthBills.length} บิล</p></div>
+          <div className="stat-card"><p className="text-xs text-gray">งานค้างทำ</p><p style={{fontSize:26,fontWeight:700,color:'#D97706'}}>{pending.length}</p><p className="text-xs text-gray">รายการ</p></div>
+        </div>
+      )}
+
+      {pending.length > 0 && (
+        <div className="card p-4">
+          <div className="flex items-center" style={{gap:7,marginBottom:12}}>
+            <AlertIcon /><h2 style={{fontSize:13,fontWeight:600}}>งานที่ยังไม่เสร็จ ({pending.length})</h2>
+          </div>
+          {pending.slice(0,5).map(b => {
+            const s = wsMap[b.workStatus];
+            return (
+              <div key={b.id} onClick={()=>nav('bill-detail',{billId:b.id})}
+                style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 0',borderBottom:'1px solid #F9FAFB',cursor:'pointer'}}>
+                <div>
+                  <p style={{fontSize:13,fontWeight:500}}>{b.billNo} — {b.customerName}</p>
+                  <p style={{fontSize:11,color:'#9CA3AF',marginTop:2}}>นัดรับ: {b.dueDate||'-'}</p>
+                </div>
+                <span className={`badge ${s?.badge}`}>{s?.label}</span>
+              </div>
+            );
+          })}
+          {pending.length>5 && <button onClick={()=>nav('bills')} style={{border:'none',background:'transparent',color:'#4F63D2',fontSize:12,cursor:'pointer',marginTop:8}}>ดูทั้งหมด {pending.length} รายการ</button>}
+        </div>
+      )}
+
+      <div className="card p-4">
+        <div className="flex items-center justify-between mb-3">
+          <h2 style={{fontSize:13,fontWeight:600}}>บิลล่าสุด</h2>
+          <button onClick={()=>nav('bills')} style={{border:'none',background:'transparent',color:'#4F63D2',fontSize:12,cursor:'pointer'}}>ดูทั้งหมด</button>
+        </div>
+        {recent.length===0 ? (
+          <div style={{textAlign:'center',padding:'24px 0',color:'#9CA3AF',fontSize:13}}>ยังไม่มีบิล</div>
+        ) : recent.map(b => {
+          const s = wsMap[b.workStatus];
+          return (
+            <div key={b.id} onClick={()=>nav('bill-detail',{billId:b.id})}
+              style={{display:'flex',alignItems:'center',gap:8,padding:'10px 0',borderBottom:'1px solid #F9FAFB',cursor:'pointer'}}>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{display:'flex',alignItems:'center',gap:6,flexWrap:'wrap'}}>
+                  <span style={{fontWeight:600,fontSize:13}}>{b.billNo}</span>
+                  <span className={`badge ${s?.badge}`}>{s?.label}</span>
+                </div>
+                <p style={{fontSize:12,color:'#9CA3AF',marginTop:2,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{b.customerName} · ฿{fmt(b.totalAmount)}</p>
+              </div>
+              <span style={{fontSize:12,fontWeight:500,color:b.paymentStatus==='paid'?'#15803D':'#DC2626',flexShrink:0}}>
+                {b.paymentStatus==='paid'
+                  ? (b.paymentMethod==='transfer' ? '💳 โอน' : '💵 สด')
+                  : '⏳ ค้าง'}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ── Bills List ───────────────────────────────────────────────────────────────
+function BillsPage({ nav, session, tick }) {
+  const [q, setQ] = useState('');
+  const [wf, setWf] = useState('');
+  const [pf, setPf] = useState('');
+  const bills = useMemo(() => [...loadDB().bills].sort((a,b)=>b.createdAt?.localeCompare(a.createdAt)), [tick]);
+  const filtered = useMemo(() => bills.filter(b => {
+    const mq = !q || b.billNo.includes(q) || b.customerName.includes(q) || b.customerPhone?.includes(q);
+    const mw = !wf || b.workStatus===wf;
+    const mp = !pf || b.paymentStatus===pf;
+    return mq && mw && mp;
+  }), [bills, q, wf, pf]);
+  const shop = loadDB().shop;
+
+  function handlePrintBills() {
+    const rows = filtered.map(b=>`
+      <tr>
+        <td>${b.billNo}</td>
+        <td>${b.customerName}</td>
+        <td>${b.receivedDate||''}</td>
+        <td>${wsMap[b.workStatus]?.label||''}</td>
+        <td class="right">฿${fmt(b.totalAmount)}</td>
+        <td>${b.paymentStatus==='paid'?'✓':'–'}</td>
+      </tr>`).join('');
+    openPrint(`
+      <h2>${shop.name}</h2>
+      <p class="center">รายการบิลและงาน — พิมพ์ ${new Date().toLocaleDateString('th-TH')}</p>
+      ${q||wf||pf ? `<p class="center">กรอง: ${[q,wf&&wsMap[wf]?.label,pf==='paid'?'ชำระแล้ว':pf==='unpaid'?'ค้างชำระ':''].filter(Boolean).join(', ')}</p>` : ''}
+      <hr>
+      <table>
+        <thead><tr><th>บิล</th><th>ลูกค้า</th><th>วันรับ</th><th>สถานะ</th><th class="right">ยอด</th><th>จ่าย</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <hr><p>รวม ${filtered.length} บิล | ยอดรวม ฿${fmt(filtered.reduce((s,b)=>s+b.totalAmount,0))}</p>
+    `);
+  }
+
+  return (
+    <div className="space-y">
+      <div className="flex items-center justify-between">
+        <h1 style={{fontSize:20,fontWeight:700}}>บิลและงาน</h1>
+        <div style={{display:'flex',gap:8}}>
+          <button onClick={handlePrintBills} className="btn btn-secondary" style={{padding:'8px 12px'}} title="พิมพ์รายการ"><PrintIcon2/></button>
+          <button onClick={()=>nav('bill-new')} className="btn btn-primary"><PlusIcon />รับผ้าใหม่</button>
+        </div>
+      </div>
+      <div className="card p-3" style={{display:'flex',flexWrap:'wrap',gap:8}}>
+        <div className="relative" style={{flex:1,minWidth:160}}>
+          <div style={{position:'absolute',left:11,top:'50%',transform:'translateY(-50%)',color:'#9CA3AF',display:'flex'}}><SearchIcon/></div>
+          <input value={q} onChange={e=>setQ(e.target.value)} placeholder="ค้นหาบิล, ชื่อ, เบอร์..." className="input" style={{paddingLeft:36}}/>
+        </div>
+        <select value={wf} onChange={e=>setWf(e.target.value)} className="input" style={{width:'auto'}}>
+          <option value="">สถานะงานทั้งหมด</option>
+          {WORK_STATUSES.map(s=><option key={s.key} value={s.key}>{s.label}</option>)}
+        </select>
+        <select value={pf} onChange={e=>setPf(e.target.value)} className="input" style={{width:'auto'}}>
+          <option value="">ชำระทั้งหมด</option>
+          <option value="unpaid">ค้างชำระ</option>
+          <option value="paid">ชำระแล้ว</option>
+        </select>
+      </div>
+      <div className="card">
+        {filtered.length===0 ? (
+          <div style={{textAlign:'center',padding:'48px 16px',color:'#9CA3AF',fontSize:13}}>ไม่พบบิล</div>
+        ) : filtered.map(b => {
+          const s = wsMap[b.workStatus];
+          return (
+            <div key={b.id} onClick={()=>nav('bill-detail',{billId:b.id})}
+              style={{display:'flex',alignItems:'center',gap:10,padding:'13px 16px',borderBottom:'1px solid #F9FAFB',cursor:'pointer',transition:'background .1s'}}
+              onMouseEnter={e=>e.currentTarget.style.background='#FAFAFA'}
+              onMouseLeave={e=>e.currentTarget.style.background=''}>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{display:'flex',alignItems:'center',gap:6,flexWrap:'wrap'}}>
+                  <span style={{fontWeight:600,fontSize:13}}>{b.billNo}</span>
+                  <span className={`badge ${s?.badge}`}>{s?.label}</span>
+                  <span className={`badge ${b.paymentStatus==='paid'?'badge-green':'badge-red'}`}>
+                    {b.paymentStatus==='paid'?'ชำระแล้ว':'ค้างชำระ'}
+                  </span>
+                </div>
+                <p style={{fontSize:13,color:'#374151',marginTop:3}}>{b.customerName}
+                  {b.customerPhone && <span style={{color:'#9CA3AF'}}> · {b.customerPhone}</span>}
+                </p>
+                <p style={{fontSize:11,color:'#9CA3AF',marginTop:2}}>รับ:{b.receivedDate}{b.dueDate?' · นัดรับ:'+b.dueDate:''}</p>
+              </div>
+              <div style={{textAlign:'right',flexShrink:0}}>
+                <p style={{fontWeight:600,fontSize:14}}>฿{fmt(b.totalAmount)}</p>
+                <p style={{fontSize:11,color:'#9CA3AF'}}>{b.items?.length||0} รายการ</p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <p style={{fontSize:11,color:'#9CA3AF',textAlign:'right'}}>แสดง {filtered.length} จาก {bills.length} บิล</p>
+    </div>
+  );
+}
+
+// ── NoteChecklist ─────────────────────────────────────────────────────────────
+function NoteChecklist({ note, setNote }) {
+  const qnotes = loadDB().quickNotes || [];
+  const [extra, setExtra] = useState('');
+
+  const chipTexts = qnotes.map(q => q.text);
+
+  function getChecked() {
+    if (!note) return [];
+    return note.split(/\s*,\s*/).filter(p => chipTexts.includes(p));
+  }
+
+  function getExtra() {
+    if (!note) return '';
+    return note.split(/\s*,\s*/).filter(p => p && !chipTexts.includes(p)).join(', ');
+  }
+
+  function buildNote(checked, ex) {
+    const parts = [...checked];
+    const e = ex.trim();
+    if (e) parts.push(e);
+    return parts.join(', ');
+  }
+
+  function toggle(text) {
+    const checked = getChecked();
+    const ex = getExtra();
+    const next = checked.includes(text)
+      ? checked.filter(c => c !== text)
+      : [...checked, text];
+    setNote(buildNote(next, ex));
+  }
+
+  function handleExtra(v) {
+    setExtra(v);
+    setNote(buildNote(getChecked(), v));
+  }
+
+  // clear extra field when note is cleared externally
+  const prevNote = React.useRef(note);
+  useEffect(() => {
+    if (!note && prevNote.current) { setExtra(''); }
+    prevNote.current = note;
+  }, [note]);
+
+  const checked = getChecked();
+
+  if (qnotes.length === 0) return (
+    <input value={extra} onChange={e => handleExtra(e.target.value)}
+      className="input" placeholder="พิมพ์หมายเหตุ..." style={{fontSize:13}} />
+  );
+
+  return (
+    <div style={{border:'1.5px solid #E5E7EB',borderRadius:12,overflow:'hidden'}}>
+      {/* Checkbox rows */}
+      {qnotes.map((q, idx) => {
+        const on = checked.includes(q.text);
+        return (
+          <label key={q.id} onClick={() => toggle(q.text)}
+            style={{
+              display:'flex', alignItems:'center', gap:12,
+              padding:'10px 14px', cursor:'pointer',
+              background: on ? '#F0F4FF' : '#fff',
+              borderBottom: idx < qnotes.length - 1 ? '1px solid #F3F4F6' : 'none',
+              transition:'background .12s', userSelect:'none',
+            }}>
+            {/* Custom checkbox */}
+            <div style={{
+              width:18, height:18, borderRadius:5, flexShrink:0,
+              border: on ? 'none' : '2px solid #D1D5DB',
+              background: on ? '#4F63D2' : '#fff',
+              display:'flex', alignItems:'center', justifyContent:'center',
+              transition:'all .12s',
+              boxShadow: on ? '0 1px 6px rgba(79,99,210,.35)' : 'none',
+            }}>
+              {on && (
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none"
+                  stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              )}
+            </div>
+            <span style={{fontSize:13, color: on ? '#1E3A8A' : '#374151', fontWeight: on ? 500 : 400}}>
+              {q.text}
+            </span>
+          </label>
+        );
+      })}
+
+      {/* Extra text input at bottom */}
+      <div style={{borderTop:'1px solid #F3F4F6', padding:'8px 10px', background:'#FAFAFA'}}>
+        <input
+          value={extra}
+          onChange={e => handleExtra(e.target.value)}
+          className="input"
+          placeholder="พิมพ์เพิ่มเติม..."
+          style={{fontSize:12, padding:'6px 10px', background:'#fff', border:'1px solid #E5E7EB'}}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ── New Bill ─────────────────────────────────────────────────────────────────
+function NewBillPage({ nav, session, onSave, tick }) {
+  // โหลด services และ customers ใหม่ทุกครั้งที่ render (ไม่ใช้ cached db)
+  const services = useMemo(()=>loadDB().services.filter(s=>s.active), [tick]);
+  const customers = useMemo(()=>loadDB().customers, [tick]);
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
+  const [lineId, setLineId] = useState('');
+  const [cusNote, setCusNote] = useState('');
+  const [payMethod, setPayMethod] = useState(''); // 'cash' | 'transfer' | 'credit'
+  const [recDate, setRecDate] = useState(today());
+  const [dueDate, setDueDate] = useState('');
+  const [note, setNote] = useState('');
+  const [items, setItems] = useState([]); // selected items
+  const [images, setImages] = useState([]);
+  const [cusInput, setCusInput] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSug, setShowSug] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [optModal, setOptModal] = useState(null); // { svc, qty }
+  const [savedBill, setSavedBill] = useState(null); // หลัง save เก็บ bill ไว้ print
+
+  function handleCusInput(v) {
+    setCusInput(v); setName(v); setShowSug(true);
+    // ค้นหาตั้งแต่ตัวแรก ทั้งชื่อ เบอร์ ที่อยู่
+    setSuggestions(v.trim().length > 0
+      ? customers.filter(c =>
+          c.name.includes(v) ||
+          (c.phone||'').includes(v) ||
+          (c.address||'').includes(v) ||
+          (c.lineId||'').includes(v)
+        ).slice(0, 6)
+      : []
+    );
+  }
+
+  function pickCus(c) {
+    setCusInput(c.name);
+    setName(c.name);
+    setPhone(c.phone || '');
+    setAddress(c.address || '');
+    setLineId(c.lineId || '');
+    setCusNote(c.note || '');
+    setSuggestions([]);
+    setShowSug(false);
+  }
+
+  function clearCus() {
+    setCusInput(''); setName(''); setPhone(''); setAddress('');
+    setLineId(''); setCusNote(''); setSuggestions([]); setShowSug(false);
+  }
+
+  // When icon clicked: if has options → open modal, else add/increment directly
+  function handleSvcClick(svc) {
+    if(svc.hasOptions) {
+      setOptModal({ svc, qty:1 });
+    } else {
+      // toggle: if already in cart increment qty
+      setItems(prev => {
+        const existing = prev.findIndex(i=>i.serviceId===svc.id && !i.optionId);
+        if(existing>=0) {
+          return prev.map((it,i)=> i===existing ? {...it, qty:it.qty+1} : it);
+        }
+        return [...prev, { serviceId:svc.id, serviceName:svc.name, unit:svc.unit, qty:1, price:svc.price, optionId:null, optionLabel:null }];
+      });
+    }
+  }
+
+  // Confirm option from modal
+  function confirmOption(opt) {
+    const { svc, qty } = optModal;
+    setItems(prev => {
+      const existing = prev.findIndex(i=>i.serviceId===svc.id && i.optionId===opt.id);
+      if(existing>=0) {
+        return prev.map((it,i)=> i===existing ? {...it, qty:it.qty+Number(qty)} : it);
+      }
+      return [...prev, { serviceId:svc.id, serviceName:svc.name+' ('+opt.label+')', unit:svc.unit, qty:Number(qty), price:opt.price, optionId:opt.id, optionLabel:opt.label }];
+    });
+    setOptModal(null);
+  }
+
+  function removeItem(idx) { setItems(prev=>prev.filter((_,i)=>i!==idx)); }
+  function updateQty(idx, val) {
+    setItems(prev=>prev.map((it,i)=> i===idx ? {...it, qty:Math.max(1,Number(val))} : it));
+  }
+  function updatePrice(idx, val) {
+    setItems(prev=>prev.map((it,i)=> i===idx ? {...it, price:Number(val)} : it));
+  }
+
+  const total = items.reduce((s,i)=>s+Number(i.qty)*Number(i.price),0);
+
+  function handleImage(e) {
+    Array.from(e.target.files).forEach(f=>{
+      const r=new FileReader(); r.onload=ev=>setImages(p=>[...p,{name:f.name,data:ev.target.result}]); r.readAsDataURL(f);
+    });
+  }
+  function validate() {
+    const e={};
+    if(!name.trim()) e.name='กรุณากรอกชื่อลูกค้า';
+    if(items.length===0) e.items='กรุณาเลือกบริการอย่างน้อย 1 รายการ';
+    if(!payMethod) e.payMethod='กรุณาเลือกวิธีชำระเงิน';
+    setErrors(e); return Object.keys(e).length===0;
+  }
+  async function handleSubmit(method) {
+    const m = method || payMethod;
+    if(!m) { setErrors(p=>({...p, payMethod:'กรุณาเลือกวิธีชำระเงิน'})); return; }
+    const e={};
+    if(!name.trim()) e.name='กรุณากรอกชื่อลูกค้า';
+    if(items.length===0) e.items='กรุณาเลือกบริการอย่างน้อย 1 รายการ';
+    if(Object.keys(e).length>0){ setErrors(e); return; }
+    setErrors({});
+    const isPaid = m === 'cash' || m === 'transfer';
+    let cus=null;
+    try { cus=await sbUpsertCustomer(name.trim(),phone.trim(),address.trim(),lineId.trim()); } catch(e2){}
+    const bill={
+      customerId:cus?.id||null, customerName:name.trim(), customerPhone:phone.trim(),
+      customerAddress:address.trim(), customerLineId:lineId.trim(),
+      items:items.map(i=>({...i,qty:Number(i.qty),price:Number(i.price),total:Number(i.qty)*Number(i.price)})),
+      totalAmount:total, paidAmount:isPaid?total:0,
+      paymentStatus:isPaid?'paid':'unpaid', paymentMethod:m,
+      workStatus:'received', receivedDate:recDate, dueDate, note, images,
+    };
+    try { const saved=await sbCreateBill(bill); setSavedBill(saved); onSave&&onSave(saved.id); }
+    catch(err){ setErrors(p=>({...p,submit:'บันทึกไม่สำเร็จ: '+(err.message||'ลองใหม่')})); }
+  }
+
+  // ── Print helpers ──────────────────────────────────────────────────────────
+  function buildReceiptHtml(bill, forCustomer) {
+    const shop = loadDB().shop;
+    const pmLabel = bill.paymentMethod==='cash' ? 'เงินสด'
+                  : bill.paymentMethod==='transfer' ? 'โอนเงิน' : 'ค้างชำระ';
+    const rows = bill.items.map(i=>
+      `<tr><td>${i.serviceName}</td><td class="right">${Number(i.qty).toFixed(1)}</td><td class="right">฿${fmt(i.price)}</td><td class="right">฿${fmt(i.qty*i.price)}</td></tr>`
+    ).join('');
+    const header = forCustomer
+      ? `<h2>${shop.name}</h2><p class="center">${shop.phone||''}</p><p class="center">${shop.address||''}</p>`
+      : `<h2>${shop.name} — ใบงานภายใน</h2>`;
+    return `
+      ${header}<hr>
+      <p><b>${bill.billNo}</b></p>
+      <p>ลูกค้า: ${bill.customerName}${bill.customerPhone?' | '+bill.customerPhone:''}</p>
+      <p>รับผ้า: ${bill.receivedDate}${bill.dueDate?' | นัดรับ: '+bill.dueDate:''}</p>
+      ${bill.note?`<p>โน้ต: ${bill.note}</p>`:''}
+      <hr>
+      <table><thead><tr><th>บริการ</th><th class="right">จำนวน</th><th class="right">ราคา</th><th class="right">รวม</th></tr></thead>
+      <tbody>${rows}</tbody></table>
+      <hr>
+      <p class="bold">รวม: ฿${fmt(bill.totalAmount)}</p>
+      <p>ชำระ: ${pmLabel} — ${bill.paymentStatus==='paid'?'ชำระแล้ว':'ค้างชำระ'}</p>
+      <p>สถานะ: ${wsMap[bill.workStatus]?.label||''}</p>
+      ${forCustomer ? `<hr><p class="center">${shop.receiptNote||''}</p>` : ''}
+    `;
+  }
+
+  function printCustomer() {
+    if(!savedBill) return;
+    openPrint(buildReceiptHtml(savedBill, true));
+  }
+  function printInternal() {
+    if(!savedBill) return;
+    openPrint(buildReceiptHtml(savedBill, false));
+  }
+
+  // Count how many times a svc is already in cart (any option)
+  function getItemCount(svcId) {
+    return items.filter(i=>i.serviceId===svcId).reduce((s,i)=>s+i.qty,0);
+  }
+
+  return (
+    <div className="space-y" style={{maxWidth:760}}>
+      {/* Header */}
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+        <div style={{display:'flex',alignItems:'center',gap:12}}>
+          <button onClick={()=>nav('bills')} className="icon-btn"><ArrowLeft/></button>
+          <h1 style={{fontSize:20,fontWeight:700}}>รับผ้าใหม่</h1>
+        </div>
+        {/* Print buttons — แสดงหลังจากบันทึกแล้ว */}
+        {savedBill && (
+          <div style={{display:'flex',gap:8}}>
+            <button onClick={printCustomer}
+              style={{display:'flex',alignItems:'center',gap:6,padding:'8px 14px',
+                borderRadius:10,border:'1px solid #4F63D2',background:'#EEF2FF',
+                color:'#4F63D2',fontSize:12,fontWeight:600,cursor:'pointer'}}>
+              <PrintIcon2/> ใบเสร็จลูกค้า
+            </button>
+            <button onClick={printInternal}
+              style={{display:'flex',alignItems:'center',gap:6,padding:'8px 14px',
+                borderRadius:10,border:'1px solid #E5E7EB',background:'#fff',
+                color:'#374151',fontSize:12,fontWeight:600,cursor:'pointer'}}>
+              <PrintIcon2/> ใบงานร้าน
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Success banner หลังบันทึก */}
+      {savedBill && (
+        <div style={{background:'#F0FDF4',border:'1.5px solid #86EFAC',borderRadius:12,
+          padding:'12px 16px',display:'flex',alignItems:'center',gap:10}}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#15803D" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
+          <div style={{flex:1}}>
+            <p style={{fontWeight:600,color:'#15803D',fontSize:13}}>บันทึกบิล {savedBill.billNo} สำเร็จแล้ว</p>
+            <p style={{fontSize:11,color:'#166534',marginTop:1}}>กดพิมพ์ใบเสร็จ หรือ <button onClick={()=>onSave&&onSave(savedBill.id)}
+              style={{border:'none',background:'transparent',color:'#4F63D2',fontSize:11,fontWeight:600,cursor:'pointer',textDecoration:'underline'}}>
+              ไปดูรายละเอียดบิล →</button></p>
+          </div>
+        </div>
+      )}
+      {optModal && (
+        <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,.45)',zIndex:100,display:'flex',alignItems:'center',justifyContent:'center',padding:16}}>
+          <div className="card p-4" style={{width:'100%',maxWidth:360,boxShadow:'0 20px 60px rgba(0,0,0,.2)'}}>
+            <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:16}}>
+              <div style={{width:52,height:52,borderRadius:12,background:optModal.svc.color||'#F8F9FC',
+                display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                <SvcIcon iconId={optModal.svc.icon} color={optModal.svc.iconColor} size={30}/>
+              </div>
+              <div>
+                <p style={{fontWeight:700,fontSize:15}}>{optModal.svc.name}</p>
+                <p style={{fontSize:12,color:'#9CA3AF'}}>เลือกตัวเลือก</p>
+              </div>
+              <button onClick={()=>setOptModal(null)} className="icon-btn" style={{marginLeft:'auto'}}><XIcon/></button>
+            </div>
+            <div style={{marginBottom:14}}>
+              <label className="label">จำนวน ({UNITS[optModal.svc.unit]||optModal.svc.unit})</label>
+              <input type="number" min="1" step="1" value={optModal.qty}
+                onChange={e=>setOptModal(p=>({...p,qty:e.target.value}))}
+                className="input" style={{fontSize:16,textAlign:'center',fontWeight:600}}/>
+            </div>
+            <p style={{fontSize:12,fontWeight:600,color:'#6B7280',marginBottom:8}}>อุณหภูมิน้ำ</p>
+            <div style={{display:'flex',flexDirection:'column',gap:8}}>
+              {optModal.svc.options.map(opt=>(
+                <button key={opt.id} onClick={()=>confirmOption(opt)}
+                  style={{display:'flex',alignItems:'center',justifyContent:'space-between',
+                    padding:'13px 16px',border:'2px solid #E5E7EB',borderRadius:12,background:'#fff',
+                    cursor:'pointer',transition:'all .15s',fontSize:14,fontWeight:500}}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor='#4F63D2';e.currentTarget.style.background='#EEF2FF';}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor='#E5E7EB';e.currentTarget.style.background='#fff';}}>
+                  <span>{opt.label}</span>
+                  <span style={{fontWeight:700,color:'#4F63D2',fontSize:15}}>฿{fmt(opt.price)}/{UNITS[optModal.svc.unit]||optModal.svc.unit}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <form onSubmit={e=>e.preventDefault()} className="space-y">
+        {/* Customer */}
+        <div className="card p-4 space-y-sm">
+          <h2 style={{fontSize:13,fontWeight:600,marginBottom:8}}>ข้อมูลลูกค้า</h2>
+
+          {/* Name with autocomplete */}
+          <div className="relative">
+            <label className="label">ชื่อลูกค้า *</label>
+            <div style={{position:'relative',display:'flex',alignItems:'center'}}>
+              <input value={cusInput}
+                onChange={e=>handleCusInput(e.target.value)}
+                onFocus={()=>{ if(cusInput.trim()) setShowSug(true); }}
+                onBlur={()=>setTimeout(()=>setShowSug(false),160)}
+                className="input" placeholder="พิมพ์ชื่อหรือเบอร์เพื่อค้นหา..." autoFocus
+                style={{paddingRight: cusInput ? 36 : 13}} />
+              {cusInput && (
+                <button type="button" onClick={clearCus}
+                  style={{position:'absolute',right:10,border:'none',background:'transparent',
+                    cursor:'pointer',color:'#9CA3AF',display:'flex',padding:0,fontSize:16,lineHeight:1}}>
+                  ✕
+                </button>
+              )}
+            </div>
+            {errors.name && <p style={{fontSize:11,color:'#DC2626',marginTop:3}}>{errors.name}</p>}
+
+            {/* Dropdown suggestions */}
+            {showSug && suggestions.length > 0 && (
+              <div style={{position:'absolute',top:'calc(100% + 2px)',left:0,right:0,background:'#fff',
+                border:'1px solid #E5E7EB',borderRadius:12,boxShadow:'0 8px 28px rgba(0,0,0,.13)',
+                zIndex:50,overflow:'hidden'}}>
+                <p style={{fontSize:10,fontWeight:600,color:'#9CA3AF',padding:'8px 14px 4px',
+                  textTransform:'uppercase',letterSpacing:.5,borderBottom:'1px solid #F3F4F6'}}>
+                  ลูกค้าในระบบ ({suggestions.length})
+                </p>
+                {suggestions.map(c=>{
+                  const billCount = loadDB().bills.filter(b=>b.customerId===c.id).length;
+                  return (
+                    <div key={c.id}
+                      onMouseDown={()=>pickCus(c)}
+                      style={{display:'flex',alignItems:'center',gap:12,padding:'10px 14px',
+                        cursor:'pointer',borderBottom:'1px solid #F9FAFB',transition:'background .1s'}}
+                      onMouseEnter={e=>e.currentTarget.style.background='#F5F7FF'}
+                      onMouseLeave={e=>e.currentTarget.style.background=''}>
+                      {/* Avatar */}
+                      <div style={{width:34,height:34,borderRadius:'50%',background:'#EEF2FF',
+                        flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',
+                        fontSize:14,fontWeight:600,color:'#4F63D2'}}>
+                        {c.name[0]}
+                      </div>
+                      <div style={{flex:1,minWidth:0}}>
+                        <p style={{fontSize:13,fontWeight:600,color:'#111827'}}>{c.name}</p>
+                        <p style={{fontSize:11,color:'#9CA3AF',marginTop:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
+                          {c.phone || 'ไม่มีเบอร์'}
+                          {c.address ? ' · '+c.address : ''}
+                        </p>
+                      </div>
+                      <div style={{textAlign:'right',flexShrink:0}}>
+                        <p style={{fontSize:11,color:'#6B7280'}}>{billCount} บิล</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* No results hint */}
+            {showSug && cusInput.trim().length > 0 && suggestions.length === 0 && (
+              <div style={{position:'absolute',top:'calc(100% + 2px)',left:0,right:0,background:'#fff',
+                border:'1px solid #E5E7EB',borderRadius:12,boxShadow:'0 8px 28px rgba(0,0,0,.1)',
+                zIndex:50,padding:'12px 14px',textAlign:'center'}}>
+                <p style={{fontSize:12,color:'#9CA3AF'}}>ไม่พบลูกค้าในระบบ — จะสร้างลูกค้าใหม่</p>
+              </div>
+            )}
+          </div>
+
+          {/* Phone */}
+          <div>
+            <label className="label">เบอร์โทรศัพท์</label>
+            <input value={phone} onChange={e=>setPhone(e.target.value)}
+              className="input" placeholder="08X-XXX-XXXX" />
+          </div>
+
+          {/* Address */}
+          <div>
+            <label className="label">ที่อยู่</label>
+            <input value={address} onChange={e=>setAddress(e.target.value)}
+              className="input" placeholder="บ้านเลขที่ ซอย ถนน..." />
+          </div>
+
+          {/* Line ID */}
+          <div>
+            <label className="label">LINE ID</label>
+            <input value={lineId} onChange={e=>setLineId(e.target.value)}
+              className="input" placeholder="@lineid หรือชื่อ LINE" />
+          </div>
+
+          {/* Date row */}
+          <div className="grid2">
+            <div>
+              <label className="label">วันที่รับผ้า</label>
+              <input type="date" value={recDate} onChange={e=>setRecDate(e.target.value)} className="input" />
+            </div>
+            <div>
+              <label className="label">วันนัดรับผ้า</label>
+              <input type="date" value={dueDate} onChange={e=>setDueDate(e.target.value)} className="input" />
+            </div>
+          </div>
+        </div>
+
+        {/* Service icon picker */}
+        <div className="card p-4">
+          <h2 style={{fontSize:13,fontWeight:600,marginBottom:14}}>เลือกบริการ</h2>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(100px,1fr))',gap:10}}>
+            {services.map(svc=>{
+              const count = getItemCount(svc.id);
+              return (
+                <button key={svc.id} type="button" onClick={()=>handleSvcClick(svc)}
+                  style={{position:'relative',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',
+                    gap:6,padding:'14px 8px',borderRadius:14,border: count>0 ? '2px solid #4F63D2' : '2px solid transparent',
+                    background: count>0 ? '#EEF2FF' : svc.color||'#F8F9FC',
+                    cursor:'pointer',transition:'all .15s',minHeight:90}}
+                  onMouseEnter={e=>{ if(count===0){ e.currentTarget.style.transform='scale(1.04)'; e.currentTarget.style.boxShadow='0 4px 16px rgba(79,99,210,.15)'; }}}
+                  onMouseLeave={e=>{ e.currentTarget.style.transform=''; e.currentTarget.style.boxShadow=''; }}>
+                  {count>0 && (
+                    <div style={{position:'absolute',top:6,right:8,
+                      background:'#4F63D2',color:'#fff',borderRadius:20,minWidth:20,height:20,
+                      display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:700,padding:'0 5px'}}>
+                      {count}
+                    </div>
+                  )}
+                  <div style={{width:44,height:44,borderRadius:10,background:count>0?'rgba(255,255,255,0.7)':svc.color||'#F8F9FC',
+                    display:'flex',alignItems:'center',justifyContent:'center'}}>
+                    <SvcIcon iconId={svc.icon} color={count>0?'#4F63D2':svc.iconColor||'#374151'} size={26}/>
+                  </div>
+                  <span style={{fontSize:11,fontWeight:600,color:'#374151',textAlign:'center',lineHeight:1.3}}>{svc.name}</span>
+                  {svc.hasOptions
+                    ? <span style={{fontSize:10,color:'#9CA3AF'}}>มีตัวเลือก</span>
+                    : <span style={{fontSize:11,fontWeight:500,color:svc.iconColor||'#6B7280'}}>฿{fmt(svc.price)}</span>
+                  }
+                </button>
+              );
+            })}
+          </div>
+          {errors.items && <p style={{fontSize:11,color:'#DC2626',marginTop:10}}>{errors.items}</p>}
+        </div>
+
+        {/* Cart / selected items */}
+        {items.length>0 && (
+          <div className="card p-4">
+            <h2 style={{fontSize:13,fontWeight:600,marginBottom:12}}>รายการที่เลือก ({items.length})</h2>
+            <div style={{display:'flex',flexDirection:'column',gap:8}}>
+              {items.map((it,idx)=>(
+                <div key={idx} style={{display:'grid',gridTemplateColumns:'1fr 80px 80px 80px 32px',gap:8,alignItems:'center',
+                  background:'#F8F9FC',borderRadius:10,padding:'10px 12px'}}>
+                  <div style={{minWidth:0}}>
+                    <p style={{fontSize:13,fontWeight:500,color:'#1A1D23',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{it.serviceName}</p>
+                    <p style={{fontSize:11,color:'#9CA3AF'}}>{UNITS[it.unit]||it.unit}</p>
+                  </div>
+                  <div>
+                    <label className="label" style={{fontSize:10}}>จำนวน</label>
+                    <input type="number" min="1" step="1" value={it.qty} onChange={e=>updateQty(idx,e.target.value)}
+                      className="input" style={{fontSize:13,padding:'5px 8px',textAlign:'center'}}/>
+                  </div>
+                  <div>
+                    <label className="label" style={{fontSize:10}}>ราคา</label>
+                    <input type="number" min="0" value={it.price} onChange={e=>updatePrice(idx,e.target.value)}
+                      className="input" style={{fontSize:13,padding:'5px 8px',textAlign:'right'}}/>
+                  </div>
+                  <div style={{textAlign:'right'}}>
+                    <p style={{fontSize:10,color:'#9CA3AF',marginBottom:3}}>รวม</p>
+                    <p style={{fontSize:14,fontWeight:700,color:'#4F63D2'}}>฿{fmt(it.qty*it.price)}</p>
+                  </div>
+                  <button type="button" onClick={()=>removeItem(idx)} className="icon-btn danger" style={{alignSelf:'center'}}><TrashIcon/></button>
+                </div>
+              ))}
+            </div>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',paddingTop:14,marginTop:4,borderTop:'2px solid #F3F4F6'}}>
+              <span style={{fontSize:13,color:'#6B7280',fontWeight:500}}>ยอดรวมทั้งหมด</span>
+              <span style={{fontSize:24,fontWeight:700,color:'#111827'}}>฿{fmt(total)}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Note & Images */}
+        <div className="card p-4 space-y-sm">
+          <h2 style={{fontSize:13,fontWeight:600,marginBottom:10}}>หมายเหตุและรูปภาพ</h2>
+          <div>
+            <label className="label" style={{marginBottom:8}}>หมายเหตุ / โน้ต</label>
+            <NoteChecklist note={note} setNote={setNote} />
+          </div>
+          <div style={{marginTop:4}}>
+            <label className="label">แนบรูปภาพ</label>
+            <label style={{display:'inline-flex',alignItems:'center',gap:7,padding:'8px 14px',border:'1px solid #E5E7EB',borderRadius:10,fontSize:13,color:'#374151',cursor:'pointer',background:'#fff'}}>
+              <CameraIcon/> เพิ่มรูปภาพ
+              <input type="file" multiple accept="image/*" onChange={handleImage} style={{display:'none'}}/>
+            </label>
+            {images.length>0 && (
+              <div style={{display:'flex',flexWrap:'wrap',gap:8,marginTop:10}}>
+                {images.map((img,i)=>(
+                  <div key={i} style={{position:'relative'}}>
+                    <img src={img.data} alt="" style={{width:64,height:64,objectFit:'cover',borderRadius:10,border:'1px solid #E5E7EB'}}/>
+                    <button type="button" onClick={()=>setImages(p=>p.filter((_,j)=>j!==i))}
+                      style={{position:'absolute',top:-6,right:-6,width:18,height:18,borderRadius:'50%',background:'#EF4444',border:'none',color:'#fff',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',fontSize:10}}>
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+        {/* Payment method & submit */}
+        <div className="card p-4">
+          <h2 style={{fontSize:13,fontWeight:600,marginBottom:4}}>วิธีชำระเงิน</h2>
+          <p style={{fontSize:11,color:'#9CA3AF',marginBottom:14}}>เลือก 1 รายการ</p>
+          {errors.payMethod && (
+            <p style={{fontSize:11,color:'#DC2626',marginBottom:10,display:'flex',alignItems:'center',gap:5}}>
+              ⚠️ {errors.payMethod}
+            </p>
+          )}
+
+          {/* 3 selection cards */}
+          <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:10,marginBottom:16}}>
+            {[
+              { key:'cash',     label:'เงินสด',   sub:'ชำระแล้ว',    bg:'#DCFCE7', stroke:'#15803D', selBg:'#F0FDF4', selBorder:'#15803D',
+                svgPath: <><rect x="3" y="8" width="26" height="16" rx="3"/><circle cx="16" cy="16" r="4"/><line x1="3" y1="13" x2="8" y2="13"/><line x1="3" y1="19" x2="8" y2="19"/><line x1="24" y1="13" x2="29" y2="13"/><line x1="24" y1="19" x2="29" y2="19"/></> },
+              { key:'credit',   label:'ค้างชำระ', sub:'รอจ่ายทีหลัง', bg:'#FEE2E2', stroke:'#B91C1C', selBg:'#FEF2F2', selBorder:'#B91C1C',
+                svgPath: <><circle cx="16" cy="16" r="12"/><line x1="16" y1="9" x2="16" y2="16"/><line x1="16" y1="16" x2="21" y2="21"/><circle cx="16" cy="16" r="1.5" fill="#B91C1C"/></> },
+              { key:'transfer', label:'โอนเงิน',  sub:'ชำระแล้ว',    bg:'#DBEAFE', stroke:'#1D4ED8', selBg:'#EFF6FF', selBorder:'#1D4ED8',
+                svgPath: <><rect x="4" y="4" width="10" height="10" rx="1.5"/><rect x="18" y="4" width="10" height="10" rx="1.5"/><rect x="4" y="18" width="10" height="10" rx="1.5"/><rect x="6" y="6" width="6" height="6" rx=".5" fill="#1D4ED8" stroke="none"/><rect x="20" y="6" width="6" height="6" rx=".5" fill="#1D4ED8" stroke="none"/><rect x="6" y="20" width="6" height="6" rx=".5" fill="#1D4ED8" stroke="none"/><line x1="18" y1="18" x2="22" y2="18"/><line x1="22" y1="18" x2="22" y2="28"/><line x1="18" y1="22" x2="22" y2="22"/><line x1="24" y1="22" x2="28" y2="22"/><line x1="26" y1="18" x2="26" y2="22"/></> },
+            ].map(pm => {
+              const sel = payMethod === pm.key;
+              return (
+                <button key={pm.key} type="button" onClick={() => setPayMethod(pm.key)}
+                  style={{
+                    display:'flex', flexDirection:'column', alignItems:'center', gap:8,
+                    padding:'16px 10px', borderRadius:14,
+                    border: sel ? `2.5px solid ${pm.selBorder}` : '2px solid #E5E7EB',
+                    background: sel ? pm.selBg : '#FAFAFA',
+                    cursor:'pointer', transition:'all .15s',
+                    position:'relative',
+                    boxShadow: sel ? `0 0 0 3px ${pm.selBorder}22` : 'none',
+                  }}>
+                  {/* Checkmark badge when selected */}
+                  {sel && (
+                    <div style={{position:'absolute',top:8,right:8,
+                      width:20,height:20,borderRadius:'50%',background:pm.selBorder,
+                      display:'flex',alignItems:'center',justifyContent:'center'}}>
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                        stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                    </div>
+                  )}
+                  {/* Icon circle */}
+                  <div style={{width:50,height:50,borderRadius:13,background:pm.bg,
+                    display:'flex',alignItems:'center',justifyContent:'center',
+                    border: sel ? `2px solid ${pm.selBorder}44` : 'none',
+                    transition:'all .15s'}}>
+                    <svg width="26" height="26" viewBox="0 0 32 32" fill="none"
+                      stroke={pm.stroke} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      {pm.svgPath}
+                    </svg>
+                  </div>
+                  <div style={{textAlign:'center'}}>
+                    <p style={{fontSize:13,fontWeight: sel ? 700 : 500, color: sel ? pm.selBorder : '#374151', transition:'all .15s'}}>
+                      {pm.label}
+                    </p>
+                    <p style={{fontSize:10,color: sel ? pm.selBorder : '#9CA3AF', marginTop:2, fontWeight: sel ? 500 : 400}}>
+                      {pm.sub}
+                    </p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Selection summary strip */}
+          {payMethod && (
+            <div style={{
+              display:'flex', alignItems:'center', gap:10,
+              padding:'10px 14px', borderRadius:12, marginBottom:4,
+              background: payMethod==='cash' ? '#F0FDF4' : payMethod==='transfer' ? '#EFF6FF' : '#FEF2F2',
+              border: `1px solid ${payMethod==='cash'?'#86EFAC':payMethod==='transfer'?'#93C5FD':'#FCA5A5'}`,
+            }}>
+              <span style={{fontSize:18}}>
+                {payMethod==='cash' ? '💵' : payMethod==='transfer' ? '💳' : '⏳'}
+              </span>
+              <div style={{flex:1}}>
+                <p style={{fontSize:13,fontWeight:600,
+                  color: payMethod==='cash'?'#15803D':payMethod==='transfer'?'#1D4ED8':'#B91C1C'}}>
+                  {payMethod==='cash' ? 'เงินสด — ชำระแล้ว'
+                  : payMethod==='transfer' ? 'โอนเงิน — ชำระแล้ว'
+                  : 'ค้างชำระ — รอจ่ายทีหลัง'}
+                </p>
+                {items.length>0 && (
+                  <p style={{fontSize:11,color:'#6B7280',marginTop:1}}>
+                    {items.length} รายการ · ฿{fmt(total)}
+                    {payMethod==='credit' ? ' · ยอดค้าง' : ' · จ่ายครบแล้ว'}
+                  </p>
+                )}
+              </div>
+              <button type="button" onClick={()=>setPayMethod('')}
+                style={{border:'none',background:'transparent',cursor:'pointer',
+                  color:'#9CA3AF',fontSize:16,lineHeight:1,padding:'2px 4px'}}>✕</button>
+            </div>
+          )}
+        </div>
+
+        {/* Action buttons */}
+        <div style={{display:'flex',gap:10}}>
+          <button type="button" onClick={()=>nav('bills')}
+            className="btn btn-secondary" style={{flex:'0 0 auto',padding:'10px 20px'}}>
+            ยกเลิก
+          </button>
+          <button type="button"
+            onClick={() => {
+              if(!payMethod) { setErrors(p=>({...p,payMethod:'กรุณาเลือกวิธีชำระเงิน'})); return; }
+              handleSubmit(payMethod);
+            }}
+            disabled={items.length===0}
+            style={{
+              flex:1, display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+              padding:'12px 20px', borderRadius:12, border:'none', cursor: items.length===0 ? 'not-allowed' : 'pointer',
+              fontWeight:600, fontSize:14, transition:'all .15s',
+              background: items.length===0 || !payMethod ? '#E5E7EB'
+                : payMethod==='cash' ? '#15803D'
+                : payMethod==='transfer' ? '#1D4ED8'
+                : '#B91C1C',
+              color: items.length===0 || !payMethod ? '#9CA3AF' : '#fff',
+              opacity: items.length===0 ? .6 : 1,
+            }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            {items.length===0 ? 'เลือกบริการก่อน'
+              : !payMethod ? 'เลือกวิธีชำระเงินก่อน'
+              : `บันทึกบิล — ${payMethod==='cash'?'เงินสด':payMethod==='transfer'?'โอนเงิน':'ค้างชำระ'} ฿${fmt(total)}`}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+// ── Bill Detail ──────────────────────────────────────────────────────────────
+function BillDetailPage({ nav, session, billId, onUpdate }) {
+  const [bill, setBill] = useState(() => loadDB().bills.find(b=>b.id===billId));
+  const [showWsMenu, setShowWsMenu] = useState(false);
+  const shop = loadDB().shop;
+  const isOwner = session.role==='owner';
+
+  if(!bill) return <div style={{textAlign:'center',paddingTop:48,color:'#9CA3AF'}}>ไม่พบบิลนี้ <button onClick={()=>nav('bills')} className="btn btn-primary" style={{marginLeft:12}}>กลับ</button></div>;
+
+  function reload() { setBill(loadDB().bills.find(b=>b.id===billId)); }
+  async function changeWs(key) {
+    try{await sbUpdateBill(billId,{workStatus:key});}catch(e){}
+    reload(); setShowWsMenu(false); onUpdate&&onUpdate();
+  }
+  async function markPaid() {
+    try{await sbUpdateBill(billId,{paymentStatus:'paid',paidAmount:bill.totalAmount});}catch(e){}
+    reload(); onUpdate&&onUpdate();
+  }
+  async function markUnpaid() {
+    try{await sbUpdateBill(billId,{paymentStatus:'unpaid',paidAmount:0});}catch(e){}
+    reload(); onUpdate&&onUpdate();
+  }
+  async function handleDelete() {
+    if(!confirm('ลบบิล '+bill.billNo+'?')) return;
+    try{await sbDeleteBill(billId);}catch(e){}
+    onUpdate&&onUpdate(); nav('bills');
+  }
+  function handlePrint() {
+    const rows = bill.items.map(i=>`<tr><td>${i.serviceName}</td><td style="text-align:right">${fmt(i.qty)}</td><td style="text-align:right">฿${fmt(i.price)}</td><td style="text-align:right">฿${fmt(i.qty*i.price)}</td></tr>`).join('');
+    const w = window.open('','_blank','width=380,height=620');
+    w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${bill.billNo}</title>
+    <style>body{font-family:sans-serif;font-size:12px;max-width:280px;margin:0 auto;padding:10px}
+    h2,p{text-align:center;margin:3px 0}hr{margin:6px 0}
+    table{width:100%;border-collapse:collapse}th,td{padding:3px 2px}
+    th{border-bottom:1px solid #000;font-size:11px}
+    tfoot td{border-top:1px solid #000;font-weight:bold}</style>
+    </head><body>
+    <h2>${shop.name}</h2><p style="font-size:11px">${shop.phone}</p><p style="font-size:10px">${shop.address}</p><hr>
+    <p style="text-align:left"><strong>${bill.billNo}</strong> | วันที่: ${bill.receivedDate}</p>
+    <p style="text-align:left">ลูกค้า: ${bill.customerName} ${bill.customerPhone?'| '+bill.customerPhone:''}</p>
+    ${bill.dueDate?`<p style="text-align:left">นัดรับ: ${bill.dueDate}</p>`:''}
+    ${bill.note?`<p style="text-align:left">หมายเหตุ: ${bill.note}</p>`:''}
+    <hr>
+    <table><thead><tr><th>บริการ</th><th>จำนวน</th><th>ราคา</th><th>รวม</th></tr></thead>
+    <tbody>${rows}</tbody>
+    <tfoot><tr><td colspan="3">รวมทั้งหมด</td><td style="text-align:right">฿${fmt(bill.totalAmount)}</td></tr></tfoot></table>
+    <hr><p>สถานะ: ${wsMap[bill.workStatus]?.label} | ชำระ: ${bill.paymentStatus==='paid'?'ชำระแล้ว':'ค้างชำระ'}</p>
+    <hr><p style="font-size:10px">${shop.receiptNote}</p>
+    </body></html>`);
+    w.document.close(); setTimeout(()=>w.print(),300);
+  }
+  const ws = wsMap[bill.workStatus];
+  return (
+    <div className="space-y" style={{maxWidth:680}}>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+        <div style={{display:'flex',alignItems:'center',gap:12}}>
+          <button onClick={()=>nav('bills')} className="icon-btn"><ArrowLeft/></button>
+          <div>
+            <h1 style={{fontSize:20,fontWeight:700}}>{bill.billNo}</h1>
+            <p style={{fontSize:12,color:'#9CA3AF'}}>{bill.receivedDate}</p>
+          </div>
+        </div>
+        <div style={{display:'flex',gap:6}}>
+          <button onClick={handlePrint} className="print-btn"><PrintIcon/>พิมพ์ใบเสร็จ</button>
+          {isOwner && <button onClick={handleDelete} className="icon-btn danger"><TrashIcon/></button>}
+        </div>
+      </div>
+
+      {/* Status */}
+      <div className="card p-4" style={{display:'flex',flexWrap:'wrap',gap:12,alignItems:'center',justifyContent:'space-between'}}>
+        <div className="relative">
+          <button onClick={()=>setShowWsMenu(v=>!v)}
+            className={`badge ${ws?.badge}`} style={{cursor:'pointer',fontSize:13,padding:'6px 14px',display:'flex',alignItems:'center',gap:5}}>
+            {ws?.label} <ChevDown/>
+          </button>
+          {showWsMenu && (
+            <div className="dropdown">
+              {WORK_STATUSES.map(s=>(
+                <button key={s.key} className="dropdown-item" onClick={()=>changeWs(s.key)}>
+                  <span className={`badge ${s.badge}`} style={{fontSize:11,padding:'2px 8px'}}>{s.label}</span>
+                  {bill.workStatus===s.key && <CheckIcon/>}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        <div style={{display:'flex',alignItems:'center',gap:10,flexWrap:'wrap'}}>
+          {/* Payment method badge */}
+          {bill.paymentStatus==='paid' ? (
+            <span style={{display:'inline-flex',alignItems:'center',gap:5,
+              padding:'5px 12px',borderRadius:20,fontSize:12,fontWeight:500,
+              background: bill.paymentMethod==='transfer' ? '#DBEAFE' : '#DCFCE7',
+              color: bill.paymentMethod==='transfer' ? '#1D4ED8' : '#15803D'}}>
+              {bill.paymentMethod==='transfer' ? '💳 โอนเงิน' : '💵 เงินสด'}
+              {' · ชำระแล้ว'}
+            </span>
+          ) : (
+            <span className="badge badge-red" style={{fontSize:12,padding:'5px 12px'}}>
+              ⏳ ค้างชำระ
+            </span>
+          )}
+          {bill.paymentStatus!=='paid'
+            ? <button onClick={markPaid} className="btn btn-primary btn-sm"><CheckIcon/>รับเงินแล้ว</button>
+            : <button onClick={markUnpaid} className="btn btn-secondary btn-sm">ยกเลิกการชำระ</button>}
+        </div>
+      </div>
+
+      {/* Customer */}
+      <div className="card p-4">
+        <h2 style={{fontSize:13,fontWeight:600,marginBottom:12}}>ข้อมูลลูกค้า</h2>
+        <table className="table">
+          <tbody>
+            <tr><td style={{color:'#9CA3AF',width:'28%'}}>ชื่อ</td><td style={{fontWeight:500}}>{bill.customerName}</td></tr>
+            <tr><td style={{color:'#9CA3AF'}}>เบอร์โทร</td><td>{bill.customerPhone||'-'}</td></tr>
+            {bill.customerAddress && <tr><td style={{color:'#9CA3AF'}}>ที่อยู่</td><td>{bill.customerAddress}</td></tr>}
+            {bill.customerLineId && <tr><td style={{color:'#9CA3AF'}}>LINE ID</td><td>{bill.customerLineId}</td></tr>}
+            <tr><td style={{color:'#9CA3AF'}}>วันรับผ้า</td><td>{bill.receivedDate}</td></tr>
+            <tr><td style={{color:'#9CA3AF'}}>วันนัดรับ</td><td>{bill.dueDate||'-'}</td></tr>
+          </tbody>
+        </table>
+        {bill.note && <div className="notice notice-amber mt-3"><strong>หมายเหตุ: </strong>{bill.note}</div>}
+      </div>
+
+      {/* Items */}
+      <div className="card p-4">
+        <h2 style={{fontSize:13,fontWeight:600,marginBottom:12}}>รายการบริการ</h2>
+        <table className="table">
+          <thead><tr><th>บริการ</th><th style={{textAlign:'right'}}>จำนวน</th><th style={{textAlign:'right'}}>ราคา/หน่วย</th><th style={{textAlign:'right'}}>รวม</th></tr></thead>
+          <tbody>
+            {bill.items?.map((it,i)=>(
+              <tr key={i}>
+                <td>{it.serviceName}</td>
+                <td style={{textAlign:'right',color:'#6B7280'}}>{fmt(it.qty)} {UNITS[it.unit]||it.unit}</td>
+                <td style={{textAlign:'right',color:'#6B7280'}}>฿{fmt(it.price)}</td>
+                <td style={{textAlign:'right',fontWeight:500}}>฿{fmt(it.qty*it.price)}</td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr style={{borderTop:'2px solid #F3F4F6'}}>
+              <td colSpan={3} style={{paddingTop:12,fontWeight:600,color:'#374151'}}>ยอดรวม</td>
+              <td style={{textAlign:'right',paddingTop:12,fontSize:20,fontWeight:700}}>฿{fmt(bill.totalAmount)}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      {/* Images */}
+      {bill.images?.length>0 && (
+        <div className="card p-4">
+          <h2 style={{fontSize:13,fontWeight:600,marginBottom:12}}>รูปภาพแนบ ({bill.images.length})</h2>
+          <div style={{display:'flex',flexWrap:'wrap',gap:10}}>
+            {bill.images.map((img,i)=>(
+              <a key={i} href={img.data} target="_blank" rel="noreferrer">
+                <img src={img.data} alt="" style={{width:88,height:88,objectFit:'cover',borderRadius:12,border:'1px solid #E5E7EB'}}/>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Customers ────────────────────────────────────────────────────────────────
+function CustomersPage({ nav, tick }) {
+  const [q, setQ] = useState('');
+  const db = useMemo(()=>loadDB(), [tick]);
+  const customers = db.customers;
+  const bills = db.bills;
+  const shop = db.shop;
+  const enriched = useMemo(() => customers.map(c=>{
+    const cb = bills.filter(b=>b.customerId===c.id);
+    return {...c, billCount:cb.length, totalSpend:cb.reduce((s,b)=>s+b.totalAmount,0)};
+  }).sort((a,b)=>b.totalSpend-a.totalSpend), [customers, bills, tick]);
+  const filtered = useMemo(()=>enriched.filter(c=>!q||c.name.includes(q)||c.phone?.includes(q)),[enriched,q]);
+
+  function handlePrintCustomers() {
+    const rows = filtered.map(c=>`
+      <tr>
+        <td>${c.name}</td>
+        <td>${c.phone||'-'}</td>
+        <td>${c.address||'-'}</td>
+        <td class="right">${c.billCount}</td>
+        <td class="right">฿${fmt(c.totalSpend)}</td>
+      </tr>`).join('');
+    openPrint(`
+      <h2>${shop.name}</h2>
+      <p class="center">รายการลูกค้า — ${new Date().toLocaleDateString('th-TH')}</p><hr>
+      <table>
+        <thead><tr><th>ชื่อ</th><th>เบอร์</th><th>ที่อยู่</th><th class="right">บิล</th><th class="right">ยอดรวม</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <hr><p>รวม ${filtered.length} คน</p>
+    `);
+  }
+
+  return (
+    <div className="space-y">
+      <div className="flex items-center justify-between">
+        <h1 style={{fontSize:20,fontWeight:700}}>ลูกค้า</h1>
+        <div style={{display:'flex',alignItems:'center',gap:8}}>
+          <button onClick={handlePrintCustomers} className="btn btn-secondary" style={{padding:'8px 12px'}} title="พิมพ์รายการลูกค้า"><PrintIcon2/></button>
+          <span style={{fontSize:12,color:'#9CA3AF'}}>{customers.length} คน</span>
+        </div>
+      </div>
+      <div className="relative">
+        <div style={{position:'absolute',left:11,top:'50%',transform:'translateY(-50%)',color:'#9CA3AF',display:'flex'}}><SearchIcon/></div>
+        <input value={q} onChange={e=>setQ(e.target.value)} placeholder="ค้นหาชื่อหรือเบอร์โทร..." className="input" style={{paddingLeft:36}}/>
+      </div>
+      <div className="card">
+        {filtered.length===0 ? <div style={{textAlign:'center',padding:'48px 16px',color:'#9CA3AF',fontSize:13}}>ไม่พบลูกค้า</div>
+        : filtered.map(c=>(
+          <div key={c.id} style={{display:'flex',alignItems:'center',gap:12,padding:'13px 16px',borderBottom:'1px solid #F9FAFB'}}>
+            <div className="avatar">{c.name[0]}</div>
+            <div style={{flex:1,minWidth:0}}>
+              <p style={{fontWeight:500,fontSize:13}}>{c.name}</p>
+              <p style={{fontSize:11,color:'#9CA3AF',marginTop:2}}>{c.phone||'-'}
+                {c.lineId ? <span style={{marginLeft:8,color:'#06C755'}}>LINE: {c.lineId}</span> : ''}
+              </p>
+              {c.address && <p style={{fontSize:11,color:'#9CA3AF',marginTop:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{c.address}</p>}
+            </div>
+            <div style={{textAlign:'right'}}>
+              <p style={{fontWeight:600,fontSize:13}}>฿{fmt(c.totalSpend)}</p>
+              <p style={{fontSize:11,color:'#9CA3AF'}}>{c.billCount} บิล</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <p style={{fontSize:11,color:'#9CA3AF'}}>ลูกค้าถูกเพิ่มอัตโนมัติเมื่อสร้างบิล</p>
+    </div>
+  );
+}
+
+// ── Services ─────────────────────────────────────────────────────────────────
+// ── Laundry SVG icons ─────────────────────────────────────────────────────────
+const LAUNDRY_ICONS = [
+  { id:'washer', label:'เครื่องซักผ้า', svg: (c)=>`<svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="2" width="26" height="28" rx="3"/><circle cx="16" cy="18" r="7"/><circle cx="16" cy="18" r="4"/><rect x="7" y="6" width="3" height="3" rx="1"/><rect x="12" y="6" width="3" height="3" rx="1"/><line x1="20" y1="7.5" x2="24" y2="7.5"/></svg>` },
+  { id:'dryer', label:'เครื่องอบผ้า', svg: (c)=>`<svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="2" width="26" height="28" rx="3"/><circle cx="16" cy="18" r="7"/><path d="M12 15 Q14 18 16 15 Q18 12 20 15"/><path d="M12 18 Q14 21 16 18 Q18 15 20 18"/><rect x="7" y="6" width="3" height="3" rx="1"/><line x1="14" y1="7.5" x2="24" y2="7.5"/></svg>` },
+  { id:'iron', label:'เตารีดผ้า', svg: (c)=>`<svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 Q4 14 10 14 L24 14 Q28 14 28 20 Z"/><line x1="14" y1="14" x2="14" y2="9"/><line x1="14" y1="9" x2="24" y2="9"/><line x1="10" y1="23" x2="10" y2="23.1"/><line x1="16" y1="23" x2="16" y2="23.1"/><line x1="22" y1="23" x2="22" y2="23.1"/><line x1="13" y1="21" x2="13" y2="21.1"/><line x1="19" y1="21" x2="19" y2="21.1"/></svg>` },
+  { id:'detergent', label:'น้ำยาซักผ้า', svg: (c)=>`<svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="10" width="14" height="18" rx="2"/><path d="M9 14 L23 14"/><path d="M13 10 L13 7 Q13 5 15 5 L17 5 Q19 5 19 7 L19 10"/><circle cx="16" cy="21" r="2.5"/><line x1="16" y1="17" x2="16" y2="18.5"/><line x1="16" y1="23.5" x2="16" y2="25"/><line x1="12" y1="21" x2="13.5" y2="21"/><line x1="18.5" y1="21" x2="20" y2="21"/></svg>` },
+  { id:'softener', label:'น้ำยาปรับผ้านุ่ม', svg: (c)=>`<svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 28 L11 14 Q11 10 16 10 Q21 10 21 14 L21 28 Z"/><path d="M13 10 Q13 6 16 5 Q19 6 19 10"/><path d="M11 18 Q13 20 16 19 Q19 20 21 18"/><circle cx="22" cy="8" r="2"/><circle cx="25" cy="5" r="1.2"/><circle cx="24" cy="12" r="1.5"/></svg>` },
+  { id:'basket', label:'ตะกร้าผ้า', svg: (c)=>`<svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14 L28 14 L25 26 Q25 28 23 28 L9 28 Q7 28 7 26 Z"/><line x1="4" y1="14" x2="28" y2="14"/><line x1="11" y1="14" x2="11" y2="28"/><line x1="16" y1="14" x2="16" y2="28"/><line x1="21" y1="14" x2="21" y2="28"/><path d="M10 14 Q12 8 16 7 Q20 8 22 14"/></svg>` },
+  { id:'shirt', label:'เสื้อผ้า', svg: (c)=>`<svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4 L4 10 L8 14 L10 12 L10 28 L22 28 L22 12 L24 14 L28 10 L21 4 Q19 7 16 7 Q13 7 11 4Z"/></svg>` },
+  { id:'quilt', label:'ผ้านวม/ผ้าห่ม', svg: (c)=>`<svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="24" height="20" rx="3"/><line x1="4" y1="13" x2="28" y2="13"/><line x1="13" y1="6" x2="13" y2="26"/><line x1="19" y1="6" x2="19" y2="26"/><circle cx="8.5" cy="9.5" r="1.2"/><circle cx="16" cy="9.5" r="1.2"/><circle cx="23.5" cy="9.5" r="1.2"/><circle cx="8.5" cy="19.5" r="1.2"/><circle cx="16" cy="19.5" r="1.2"/><circle cx="23.5" cy="19.5" r="1.2"/></svg>` },
+  { id:'shoes', label:'รองเท้า', svg: (c)=>`<svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22 Q4 18 8 18 L14 18 L20 10 Q22 8 24 9 L24 9 Q26 10 25 13 L22 18 L27 18 Q29 18 29 21 Q29 23 27 23 L5 23 Q4 23 4 22Z"/><line x1="14" y1="18" x2="12" y2="14"/><line x1="17" y1="16" x2="15" y2="12"/></svg>` },
+  { id:'suit', label:'ชุดสูท', svg: (c)=>`<svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4 L4 10 L8 13 L10 11 L10 28 L22 28 L22 11 L24 13 L28 10 L21 4 L18 9 L16 7 L14 9 Z"/><line x1="16" y1="7" x2="16" y2="28"/><path d="M13 13 Q16 15 19 13"/></svg>` },
+  { id:'droplet', label:'น้ำ/ฟอง', svg: (c)=>`<svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 5 Q22 13 22 18 Q22 24 16 26 Q10 24 10 18 Q10 13 16 5Z"/><path d="M13 20 Q15 22 18 20"/></svg>` },
+  { id:'bubble', label:'ฟองสบู่', svg: (c)=>`<svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="17" r="8"/><circle cx="9" cy="9" r="4"/><circle cx="23" cy="8" r="3"/><circle cx="25" cy="20" r="2"/></svg>` },
+  { id:'hanger', label:'ไม้แขวนเสื้อ', svg: (c)=>`<svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 7 Q16 4 19 4 Q22 4 22 7 Q22 9 16 12 L4 20 Q3 21 4 22 L28 22 Q29 21 28 20 Z"/></svg>` },
+  { id:'steam', label:'ไอน้ำ/อบไอน้ำ', svg: (c)=>`<svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 26 Q10 22 12 20 Q14 18 14 14"/><path d="M16 26 Q16 22 18 20 Q20 18 20 14"/><path d="M22 26 Q22 22 24 20 Q26 18 26 14"/><path d="M4 28 L28 28"/></svg>` },
+  { id:'sparkle', label:'สะอาด/ประกาย', svg: (c)=>`<svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4 L17.5 13 L26 11 L19 17 L26 23 L17.5 21 L16 30 L14.5 21 L6 23 L13 17 L6 11 L14.5 13 Z"/></svg>` },
+  { id:'wash-label', label:'ป้ายซักผ้า', svg: (c)=>`<svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="22" height="16" rx="2"/><path d="M10 16 L22 16"/><path d="M10 20 L18 20"/><circle cx="24" cy="6" r="2"/><line x1="24" y1="8" x2="24" y2="10"/></svg>` },
+  { id:'recycle', label:'ซักซ้ำ/รีไซเคิล', svg: (c)=>`<svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 5 L20 11 L17 11 Q17 18 22 21"/><path d="M22 21 L14 27 L14 23 Q8 21 8 14 L11 14 Z"/><path d="M8 14 L4 8 L10 8"/></svg>` },
+  { id:'express', label:'บริการด่วน', svg: (c)=>`<svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 14 L18 5 L15 14 L24 14 L14 27 L17 18 Z"/></svg>` },
+];
+
+const PRESET_COLORS = [
+  { bg:'#DBEAFE', icon:'#1E40AF', name:'น้ำเงิน' },
+  { bg:'#DCFCE7', icon:'#15803D', name:'เขียว' },
+  { bg:'#FEE2E2', icon:'#B91C1C', name:'แดง' },
+  { bg:'#FEF9C3', icon:'#854D0E', name:'เหลือง' },
+  { bg:'#F3E8FF', icon:'#7E22CE', name:'ม่วง' },
+  { bg:'#FFEDD5', icon:'#C2410C', name:'ส้ม' },
+  { bg:'#CFFAFE', icon:'#0E7490', name:'ฟ้าคราม' },
+  { bg:'#FCE7F3', icon:'#9D174D', name:'ชมพู' },
+  { bg:'#ECFDF5', icon:'#065F46', name:'เขียวมิ้น' },
+  { bg:'#EDE9FE', icon:'#5B21B6', name:'ม่วงลาเวนเดอร์' },
+  { bg:'#FFF1F2', icon:'#BE123C', name:'ชมพูเข้ม' },
+  { bg:'#F0ABFC', icon:'#701A75', name:'ม่วงชมพู' },
+  { bg:'#BAE6FD', icon:'#075985', name:'ฟ้าสด' },
+  { bg:'#A7F3D0', icon:'#064E3B', name:'เขียวสด' },
+  { bg:'#FED7AA', icon:'#9A3412', name:'ส้มพีช' },
+  { bg:'#E0E7FF', icon:'#3730A3', name:'คราม' },
+  { bg:'#FDE68A', icon:'#92400E', name:'ทอง' },
+  { bg:'#D1FAE5', icon:'#065F46', name:'มิ้นต์' },
+];
+
+// Helper: render laundry SVG icon by id (falls back to first icon)
+function SvcIcon({ iconId, color, size=28 }) {
+  const found = LAUNDRY_ICONS.find(i=>i.id===iconId) || LAUNDRY_ICONS[0];
+  const col = color || '#374151';
+  return <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',width:size,height:size}}
+    dangerouslySetInnerHTML={{__html: found.svg(col).replace('width="28"',`width="${size}"`).replace('height="28"',`height="${size}"`)}} />;
+}
+
+function ServicesPage() {
+  const [svcs, setSvcs] = useState(()=>loadDB().services);
+  const [editing, setEditing] = useState(null);
+  const [isNew, setIsNew] = useState(false);
+  const [showIconPicker, setShowIconPicker] = useState(false);
+
+  function blankSvc() {
+    return { id:null, name:'', icon:'🧺', color:'#F8F9FC', iconColor:'#374151',
+      unit:'kg', hasOptions:false, price:0, options:[], active:true };
+  }
+  function startNew(){ setEditing(blankSvc()); setIsNew(true); setShowIconPicker(false); }
+  function startEdit(s){ setEditing({...s, options: s.options ? [...s.options.map(o=>({...o}))] : []}); setIsNew(false); setShowIconPicker(false); }
+  function cancel(){ setEditing(null); setIsNew(false); setShowIconPicker(false); }
+
+  function addOption() {
+    setEditing(p=>({...p, options:[...p.options, {id:'o'+Date.now(),label:'',price:0}]}));
+  }
+  function updateOption(idx, field, val) {
+    setEditing(p=>({...p, options:p.options.map((o,i)=>i===idx?{...o,[field]:val}:o)}));
+  }
+  function removeOption(idx) {
+    setEditing(p=>({...p, options:p.options.filter((_,i)=>i!==idx)}));
+  }
+
+  function save(){
+    if(!editing.name.trim()) return;
+    const svc = {...editing};
+    if(svc.hasOptions) { svc.price=0; } else { svc.options=[]; }
+    try{await sbSaveService(svc);setSvcs([...loadDB().services]);}catch(e){console.error(e);}
+    setEditing(null); setIsNew(false);
+  }
+  function toggle(svc){
+    try{await sbSaveService({...svc,active:!svc.active});setSvcs([...loadDB().services]);}catch(e){}
+  }
+  function del(id){
+    if(!confirm('ลบบริการนี้?')) return;
+    try{await sbDeleteService(id);setSvcs([...loadDB().services]);}catch(e){}
+  }
+
+  return (
+    <div className="space-y" style={{maxWidth:700}}>
+      <div className="flex items-center justify-between">
+        <h1 style={{fontSize:20,fontWeight:700}}>บริการและราคา</h1>
+        <button onClick={startNew} className="btn btn-primary"><PlusIcon/>เพิ่มบริการ</button>
+      </div>
+
+      {/* Edit/New form */}
+      {editing && (
+        <div className="card p-4" style={{border:'2px solid #C7D2FE'}}>
+          <h2 style={{fontSize:13,fontWeight:600,marginBottom:14}}>{isNew?'เพิ่มบริการใหม่':'แก้ไขบริการ'}</h2>
+
+          {/* Icon & name row */}
+          <div style={{display:'flex',gap:12,alignItems:'flex-start',marginBottom:14}}>
+            {/* Icon picker trigger */}
+            <div style={{position:'relative'}}>
+              <button type="button" onClick={()=>setShowIconPicker(v=>!v)}
+                style={{width:64,height:64,borderRadius:14,border:'2px solid #E5E7EB',background:editing.color||'#F8F9FC',
+                  cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                <SvcIcon iconId={editing.icon} color={editing.iconColor} size={32} />
+              </button>
+              {showIconPicker && (
+                <div style={{position:'absolute',top:70,left:0,background:'#fff',border:'1px solid #E5E7EB',
+                  borderRadius:14,boxShadow:'0 8px 24px rgba(0,0,0,.14)',zIndex:50,padding:14,width:320}}>
+                  <p style={{fontSize:11,fontWeight:600,color:'#9CA3AF',marginBottom:10}}>เลือกไอคอน</p>
+                  <div style={{display:'grid',gridTemplateColumns:'repeat(6,1fr)',gap:6,marginBottom:14}}>
+                    {LAUNDRY_ICONS.map(ic=>(
+                      <button key={ic.id} type="button"
+                        onClick={()=>setEditing(p=>({...p,icon:ic.id}))}
+                        title={ic.label}
+                        style={{width:44,height:44,borderRadius:10,
+                          border: editing.icon===ic.id?'2px solid #4F63D2':'2px solid transparent',
+                          background: editing.icon===ic.id?'#EEF2FF':'#F8F9FC',
+                          cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:2}}>
+                        <SvcIcon iconId={ic.id} color={editing.icon===ic.id?'#4F63D2':'#6B7280'} size={22}/>
+                      </button>
+                    ))}
+                  </div>
+                  {editing.icon && (
+                    <p style={{fontSize:11,color:'#4F63D2',fontWeight:500,marginBottom:10,textAlign:'center'}}>
+                      {LAUNDRY_ICONS.find(i=>i.id===editing.icon)?.label}
+                    </p>
+                  )}
+                  <p style={{fontSize:11,fontWeight:600,color:'#9CA3AF',marginBottom:8}}>สีพื้นหลัง</p>
+                  <div style={{display:'grid',gridTemplateColumns:'repeat(6,1fr)',gap:6}}>
+                    {PRESET_COLORS.map((c,i)=>(
+                      <button key={i} type="button"
+                        onClick={()=>setEditing(p=>({...p,color:c.bg,iconColor:c.icon}))}
+                        title={c.name}
+                        style={{width:38,height:38,borderRadius:9,background:c.bg,
+                          display:'flex',alignItems:'center',justifyContent:'center',
+                          border: editing.color===c.bg?'3px solid #4F63D2':'2px solid rgba(0,0,0,.08)',cursor:'pointer'}}>
+                        {editing.color===c.bg && (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={c.icon} strokeWidth="3" strokeLinecap="round">
+                            <polyline points="20 6 9 17 4 12"/>
+                          </svg>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                  <button type="button" onClick={()=>setShowIconPicker(false)}
+                    style={{marginTop:12,fontSize:12,color:'#6B7280',border:'none',background:'transparent',cursor:'pointer',display:'block',width:'100%',textAlign:'center'}}>
+                    ✕ ปิด
+                  </button>
+                </div>
+              )}
+            </div>
+            <div style={{flex:1}}>
+              <label className="label">ชื่อบริการ</label>
+              <input value={editing.name} onChange={e=>setEditing(p=>({...p,name:e.target.value}))}
+                className="input" placeholder="เช่น ซัก 12 Kg." autoFocus />
+            </div>
+          </div>
+
+          {/* Unit + options toggle */}
+          <div className="grid2" style={{marginBottom:14}}>
+            <div>
+              <label className="label">หน่วย</label>
+              <select value={editing.unit} onChange={e=>setEditing(p=>({...p,unit:e.target.value}))} className="input">
+                {Object.entries(UNITS).map(([k,v])=><option key={k} value={k}>{v}</option>)}
+              </select>
+            </div>
+            <div style={{display:'flex',alignItems:'center',gap:10,paddingTop:20}}>
+              <input type="checkbox" id="hasOpt" checked={!!editing.hasOptions}
+                onChange={e=>setEditing(p=>({...p,hasOptions:e.target.checked}))}
+                style={{width:16,height:16,accentColor:'#4F63D2',cursor:'pointer'}}/>
+              <label htmlFor="hasOpt" style={{fontSize:13,cursor:'pointer',fontWeight:500}}>มีตัวเลือกย่อย</label>
+            </div>
+          </div>
+
+          {/* Fixed price */}
+          {!editing.hasOptions && (
+            <div style={{marginBottom:14}}>
+              <label className="label">ราคา (บาท)</label>
+              <input type="number" min="0" value={editing.price}
+                onChange={e=>setEditing(p=>({...p,price:Number(e.target.value)}))} className="input"/>
+            </div>
+          )}
+
+          {/* Sub-options */}
+          {editing.hasOptions && (
+            <div style={{marginBottom:14}}>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
+                <label className="label" style={{margin:0}}>ตัวเลือกย่อย ({editing.options.length})</label>
+                <button type="button" onClick={addOption}
+                  style={{display:'flex',alignItems:'center',gap:4,color:'#4F63D2',border:'none',background:'transparent',fontSize:12,fontWeight:600,cursor:'pointer'}}>
+                  <PlusIcon/>เพิ่มตัวเลือก
+                </button>
+              </div>
+              <div style={{display:'flex',flexDirection:'column',gap:8}}>
+                {editing.options.map((opt,idx)=>(
+                  <div key={opt.id||idx} style={{display:'grid',gridTemplateColumns:'1fr 100px 32px',gap:8,alignItems:'center',
+                    background:'#F8F9FC',borderRadius:10,padding:'10px 12px'}}>
+                    <input value={opt.label} onChange={e=>updateOption(idx,'label',e.target.value)}
+                      className="input" placeholder={`ตัวเลือกที่ ${idx+1} เช่น น้ำเย็น`} style={{fontSize:13}}/>
+                    <input type="number" min="0" value={opt.price} onChange={e=>updateOption(idx,'price',Number(e.target.value))}
+                      className="input" placeholder="ราคา" style={{fontSize:13,textAlign:'right'}}/>
+                    <button type="button" onClick={()=>removeOption(idx)} className="icon-btn danger"><TrashIcon/></button>
+                  </div>
+                ))}
+                {editing.options.length===0 && (
+                  <p style={{fontSize:12,color:'#9CA3AF',textAlign:'center',padding:'12px 0'}}>ยังไม่มีตัวเลือก กด "เพิ่มตัวเลือก"</p>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div style={{display:'flex',gap:8,justifyContent:'flex-end',paddingTop:8,borderTop:'1px solid #F3F4F6'}}>
+            <button onClick={cancel} className="btn btn-secondary btn-sm"><XIcon/>ยกเลิก</button>
+            <button onClick={save} className="btn btn-primary btn-sm"><CheckIcon/>บันทึก</button>
+          </div>
+        </div>
+      )}
+
+      {/* Service cards grid */}
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(140px,1fr))',gap:10}}>
+        {svcs.map(s=>(
+          <div key={s.id} style={{position:'relative',background:'#fff',borderRadius:14,border:'1px solid #F0F0F0',
+            boxShadow:'0 1px 3px rgba(0,0,0,.06)',padding:'14px 12px',opacity:s.active?1:.5,
+            display:'flex',flexDirection:'column',alignItems:'center',gap:6,textAlign:'center'}}>
+            {/* Active toggle */}
+            <button onClick={()=>toggle(s)}
+              style={{position:'absolute',top:8,left:8,padding:'2px 8px',borderRadius:6,fontSize:10,fontWeight:500,cursor:'pointer',border:'none',
+                background:s.active?'#F0FDF4':'#F3F4F6',color:s.active?'#15803D':'#6B7280'}}>
+              {s.active?'เปิด':'ปิด'}
+            </button>
+            {/* Action buttons */}
+            <div style={{position:'absolute',top:6,right:6,display:'flex',gap:2}}>
+              <button onClick={()=>startEdit(s)} className="icon-btn" style={{width:26,height:26,borderRadius:6}}><EditIcon/></button>
+              <button onClick={()=>del(s.id)} className="icon-btn danger" style={{width:26,height:26,borderRadius:6}}><TrashIcon/></button>
+            </div>
+            {/* Icon */}
+            <div style={{width:52,height:52,borderRadius:12,background:s.color||'#F8F9FC',
+              display:'flex',alignItems:'center',justifyContent:'center',marginTop:20}}>
+              <SvcIcon iconId={s.icon} color={s.iconColor} size={28} />
+            </div>
+            <p style={{fontSize:12,fontWeight:600,color:'#1A1D23',lineHeight:1.3}}>{s.name}</p>
+            {s.hasOptions ? (
+              <div style={{display:'flex',flexDirection:'column',gap:2,width:'100%'}}>
+                {(s.options||[]).map(opt=>(
+                  <div key={opt.id} style={{display:'flex',justifyContent:'space-between',
+                    background:'#F8F9FC',borderRadius:6,padding:'3px 8px',fontSize:11}}>
+                    <span style={{color:'#6B7280'}}>{opt.label}</span>
+                    <span style={{fontWeight:600,color:'#374151'}}>฿{fmt(opt.price)}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p style={{fontSize:13,fontWeight:700,color:s.iconColor||'#4F63D2'}}>฿{fmt(s.price)}</p>
+            )}
+            <p style={{fontSize:10,color:'#9CA3AF'}}>/{UNITS[s.unit]||s.unit}</p>
+          </div>
+        ))}
+        {/* Add new button */}
+        <button onClick={startNew} type="button"
+          style={{background:'#F8F9FC',borderRadius:14,border:'2px dashed #E5E7EB',padding:'14px 12px',
+            cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',
+            gap:8,minHeight:140,color:'#9CA3AF',transition:'all .15s'}}
+          onMouseEnter={e=>{e.currentTarget.style.borderColor='#4F63D2';e.currentTarget.style.color='#4F63D2';}}
+          onMouseLeave={e=>{e.currentTarget.style.borderColor='#E5E7EB';e.currentTarget.style.color='#9CA3AF';}}>
+          <span style={{fontSize:28}}>＋</span>
+          <span style={{fontSize:12,fontWeight:500}}>เพิ่มบริการ</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── Reports ──────────────────────────────────────────────────────────────────
+function ReportsPage() {
+  const [period, setPeriod] = useState('month');
+  const db = loadDB();
+  const shop = db.shop;
+  const data = useMemo(()=>{
+    const bills = db.bills;
+    const d = today();
+    const ym = d.slice(0,7);
+    const filtered = period==='today' ? bills.filter(b=>b.receivedDate===d)
+                   : period==='month' ? bills.filter(b=>b.receivedDate?.startsWith(ym))
+                   : bills;
+    const total = filtered.reduce((s,b)=>s+b.totalAmount,0);
+    const paid  = filtered.filter(b=>b.paymentStatus==='paid').reduce((s,b)=>s+b.totalAmount,0);
+    // group bills by date with full bill list
+    const byDate = {};
+    filtered.forEach(b=>{
+      const day = b.receivedDate||b.createdAt?.slice(0,10)||'?';
+      if(!byDate[day]) byDate[day]={date:day,count:0,total:0,paid:0,bills:[]};
+      byDate[day].count++;
+      byDate[day].total+=b.totalAmount;
+      if(b.paymentStatus==='paid') byDate[day].paid+=b.totalAmount;
+      byDate[day].bills.push(b);
+    });
+    return {filtered, total, paid, unpaid:total-paid, count:filtered.length,
+      byDate:Object.values(byDate).sort((a,b)=>b.date.localeCompare(a.date)),
+      wsCounts:Object.fromEntries(WORK_STATUSES.map(s=>[s.key,bills.filter(b=>b.workStatus===s.key).length]))
+    };
+  }, [period]);
+
+  function exportCSV(){
+    const rows=[['เลขบิล','ลูกค้า','วันรับ','ยอดรวม','ชำระแล้ว','สถานะ'],
+      ...data.filtered.map(b=>[b.billNo,b.customerName,b.receivedDate,b.totalAmount,b.paymentStatus==='paid'?b.totalAmount:0,wsMap[b.workStatus]?.label])];
+    const csv=rows.map(r=>r.join(',')).join('\n');
+    const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download=`laundrygo-${period}.csv`; a.click(); URL.revokeObjectURL(url);
+  }
+
+  function handlePrintReport() {
+    const PERIODS_LABEL = {today:'วันนี้', month:'เดือนนี้', all:'ทั้งหมด'};
+    const dayRows = data.byDate.map(d => {
+      const billRows = d.bills.map(b => `
+        <tr>
+          <td>&nbsp;&nbsp;${b.billNo}</td>
+          <td>${b.customerName}</td>
+          <td>${b.items?.map(i=>i.serviceName).join(', ')||''}</td>
+          <td class="right">฿${fmt(b.totalAmount)}</td>
+          <td>${b.paymentStatus==='paid'?'✓':'–'}</td>
+        </tr>`).join('');
+      return `
+        <tr style="background:#f0f0f0"><td colspan="5"><b>${d.date}</b> — ${d.count} บิล | ฿${fmt(d.total)} | ชำระ ฿${fmt(d.paid)}</td></tr>
+        ${billRows}`;
+    }).join('');
+    openPrint(`
+      <h2>${shop.name}</h2>
+      <p class="center">รายงาน: ${PERIODS_LABEL[period]} — พิมพ์ ${new Date().toLocaleDateString('th-TH')}</p><hr>
+      <p><b>รวม:</b> ${data.count} บิล | ยอด ฿${fmt(data.total)} | ชำระ ฿${fmt(data.paid)} | ค้าง ฿${fmt(data.unpaid)}</p><hr>
+      <table>
+        <thead><tr><th>บิล</th><th>ลูกค้า</th><th>บริการ</th><th class="right">ยอด</th><th>จ่าย</th></tr></thead>
+        <tbody>${dayRows}</tbody>
+      </table>
+      <hr><p class="center">${shop.receiptNote||''}</p>
+    `);
+  }
+
+  const PERIODS=[{key:'today',label:'วันนี้'},{key:'month',label:'เดือนนี้'},{key:'all',label:'ทั้งหมด'}];
+  return (
+    <div className="space-y" style={{maxWidth:800}}>
+      <div className="flex items-center justify-between">
+        <h1 style={{fontSize:20,fontWeight:700}}>รายงาน</h1>
+        <div style={{display:'flex',gap:8}}>
+          <button onClick={handlePrintReport} className="btn btn-secondary" style={{padding:'8px 12px'}} title="พิมพ์รายงาน"><PrintIcon2/></button>
+          <button onClick={exportCSV} className="btn btn-secondary btn-sm"><DownloadIcon/>Export CSV</button>
+        </div>
+      </div>
+      <div className="tab-group">
+        {PERIODS.map(p=><button key={p.key} onClick={()=>setPeriod(p.key)} className={`tab ${period===p.key?'active':''}`}>{p.label}</button>)}
+      </div>
+      <div className="grid4">
+        <div className="stat-card"><p className="text-xs text-gray">จำนวนบิล</p><p style={{fontSize:26,fontWeight:700}}>{data.count}</p><p className="text-xs text-gray">ใบ</p></div>
+        <div className="stat-card"><p className="text-xs text-gray">ยอดรวม</p><p style={{fontSize:20,fontWeight:700}}>฿{fmt(data.total)}</p></div>
+        <div className="stat-card">
+          <p className="text-xs text-gray">ชำระแล้ว</p>
+          <p style={{fontSize:20,fontWeight:700,color:'#15803D'}}>฿{fmt(data.paid)}</p>
+          <div style={{display:'flex',gap:6,marginTop:4,flexWrap:'wrap'}}>
+            <span style={{fontSize:10,color:'#6B7280'}}>💵 สด ฿{fmt(data.filtered.filter(b=>b.paymentMethod==='cash').reduce((s,b)=>s+b.totalAmount,0))}</span>
+            <span style={{fontSize:10,color:'#6B7280'}}>💳 โอน ฿{fmt(data.filtered.filter(b=>b.paymentMethod==='transfer').reduce((s,b)=>s+b.totalAmount,0))}</span>
+          </div>
+        </div>
+        <div className="stat-card"><p className="text-xs text-gray">ค้างชำระ</p><p style={{fontSize:20,fontWeight:700,color:'#DC2626'}}>฿{fmt(data.unpaid)}</p></div>
+      </div>
+      <div className="card p-4">
+        <h2 style={{fontSize:13,fontWeight:600,marginBottom:12}}>สถานะงานทั้งหมด</h2>
+        <div style={{display:'flex',flexWrap:'wrap',gap:8}}>
+          {WORK_STATUSES.map(s=>(
+            <div key={s.key} style={{display:'flex',alignItems:'center',gap:8,padding:'6px 14px',background:'#F8F9FC',borderRadius:10}}>
+              <span className={`badge ${s.badge}`} style={{fontSize:11}}>{s.label}</span>
+              <span style={{fontWeight:600,fontSize:14}}>{data.wsCounts[s.key]||0}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* Daily breakdown with full bill details */}
+      {data.byDate.length>0 && (
+        <div className="card p-4">
+          <h2 style={{fontSize:13,fontWeight:600,marginBottom:12}}>รายวัน (แสดงทุกรายการ)</h2>
+          {data.byDate.map(d=>(
+            <div key={d.date} style={{marginBottom:16}}>
+              {/* Day header */}
+              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',
+                background:'#F8F9FC',borderRadius:10,padding:'8px 12px',marginBottom:6}}>
+                <span style={{fontWeight:600,fontSize:13,color:'#1A1D23'}}>{d.date}</span>
+                <div style={{display:'flex',gap:12,fontSize:11,color:'#6B7280'}}>
+                  <span>{d.count} บิล</span>
+                  <span style={{fontWeight:600,color:'#374151'}}>฿{fmt(d.total)}</span>
+                  <span style={{color:'#15803D'}}>ชำระ ฿{fmt(d.paid)}</span>
+                  {d.total-d.paid>0 && <span style={{color:'#DC2626'}}>ค้าง ฿{fmt(d.total-d.paid)}</span>}
+                </div>
+              </div>
+              {/* Bills of this day */}
+              <div style={{paddingLeft:8}}>
+                {d.bills.map((b,bi)=>(
+                  <div key={b.id} style={{display:'flex',alignItems:'flex-start',gap:8,
+                    padding:'7px 10px',borderBottom:bi<d.bills.length-1?'1px solid #F9FAFB':'none',
+                    cursor:'pointer'}}
+                    onClick={()=>{}}>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{display:'flex',alignItems:'center',gap:6,flexWrap:'wrap'}}>
+                        <span style={{fontWeight:600,fontSize:12,color:'#374151'}}>{b.billNo}</span>
+                        <span style={{fontSize:12,color:'#6B7280'}}>{b.customerName}</span>
+                        {b.customerPhone && <span style={{fontSize:11,color:'#9CA3AF'}}>{b.customerPhone}</span>}
+                        <span className={`badge ${wsMap[b.workStatus]?.badge}`} style={{fontSize:10}}>{wsMap[b.workStatus]?.label}</span>
+                      </div>
+                      <div style={{fontSize:11,color:'#9CA3AF',marginTop:3}}>
+                        {b.items?.map(i=>`${i.serviceName} x${i.qty}`).join(' · ')}
+                      </div>
+                      {b.note && <div style={{fontSize:11,color:'#92400E',marginTop:2}}>📝 {b.note}</div>}
+                    </div>
+                    <div style={{textAlign:'right',flexShrink:0}}>
+                      <p style={{fontWeight:600,fontSize:13}}>฿{fmt(b.totalAmount)}</p>
+                      <p style={{fontSize:11,color:b.paymentStatus==='paid'?'#15803D':'#DC2626'}}>
+                        {b.paymentStatus==='paid'?'ชำระแล้ว':'ค้างชำระ'}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      {data.filtered.length===0 && (
+        <div style={{textAlign:'center',padding:'48px 16px',color:'#9CA3AF',fontSize:13}}>ไม่มีข้อมูลในช่วงเวลานี้</div>
+      )}
+    </div>
+  );
+}
+
+// ── Settings ─────────────────────────────────────────────────────────────────
+function SettingsPage() {
+  const [shop, setShop] = useState(()=>loadDB().shop);
+  const [saved, setSaved] = useState(false);
+
+  function ch(f,v){ setShop(p=>({...p,[f]:v})); }
+  function handleLogo(e){
+    const f=e.target.files[0]; if(!f) return;
+    const r=new FileReader(); r.onload=ev=>{ setShop(p=>({...p,logo:ev.target.result})); }; r.readAsDataURL(f);
+  }
+  function save(e){
+    e.preventDefault();
+    try{await sbSaveShop(shop);}catch(e){console.error(e);}
+    setSaved(true); setTimeout(()=>setSaved(false),2000);
+  }
+
+  return (
+    <div className="space-y" style={{maxWidth:600}}>
+      <h1 style={{fontSize:20,fontWeight:700}}>ตั้งค่าร้าน</h1>
+      <form onSubmit={save} className="space-y">
+        <div className="card p-4" style={{display:'flex',alignItems:'center',gap:16}}>
+          <div style={{width:60,height:60,borderRadius:12,background:'#F3F4F6',border:'1px solid #E5E7EB',overflow:'hidden',display:'flex',alignItems:'center',justifyContent:'center'}}>
+            {shop.logo ? <img src={shop.logo} alt="" style={{width:'100%',height:'100%',objectFit:'cover'}}/> : <span style={{fontSize:24,color:'#D1D5DB'}}>🏪</span>}
+          </div>
+          <div>
+            <p style={{fontSize:13,fontWeight:500,marginBottom:4}}>โลโก้ร้าน</p>
+            <label style={{color:'#4F63D2',fontSize:13,cursor:'pointer'}}>
+              เปลี่ยนรูป<input type="file" accept="image/*" onChange={handleLogo} style={{display:'none'}}/>
+            </label>
+          </div>
+        </div>
+        <div className="card p-4 space-y-sm">
+          <h2 style={{fontSize:13,fontWeight:600,marginBottom:8}}>ข้อมูลร้าน</h2>
+          {[['name','ชื่อร้าน','text'],['phone','เบอร์โทรศัพท์','tel'],['address','ที่อยู่','text']].map(([f,l,t])=>(
+            <div key={f}>
+              <label className="label">{l}</label>
+              {f==='address' ? <textarea value={shop[f]||''} onChange={e=>ch(f,e.target.value)} className="input" rows={2}/>
+                : <input type={t} value={shop[f]||''} onChange={e=>ch(f,e.target.value)} className="input"/>}
+            </div>
+          ))}
+          <div className="grid2">
+            <div><label className="label">เวลาเปิด</label><input type="time" value={shop.openTime||'08:00'} onChange={e=>ch('openTime',e.target.value)} className="input"/></div>
+            <div><label className="label">เวลาปิด</label><input type="time" value={shop.closeTime||'20:00'} onChange={e=>ch('closeTime',e.target.value)} className="input"/></div>
+          </div>
+          <div>
+            <label className="label">ข้อความท้ายใบเสร็จ</label>
+            <textarea value={shop.receiptNote||''} onChange={e=>ch('receiptNote',e.target.value)} className="input" rows={2}/>
+          </div>
+        </div>
+
+        {/* Printer settings */}
+        <div className="card p-4 space-y-sm">
+          <h2 style={{fontSize:13,fontWeight:600,marginBottom:8}}>ตั้งค่าเครื่องพิมพ์ใบเสร็จ</h2>
+          <div>
+            <label className="label">ขนาดกระดาษ</label>
+            <select value={shop.printerSize||'80'} onChange={e=>ch('printerSize',e.target.value)} className="input">
+              <option value="58">58 มม. (กระดาษแคบ)</option>
+              <option value="80">80 มม. (กระดาษกว้าง)</option>
+            </select>
+          </div>
+          <div>
+            <label className="label">การเชื่อมต่อ</label>
+            <select value={shop.printerConn||'browser'} onChange={e=>ch('printerConn',e.target.value)} className="input">
+              <option value="browser">พิมพ์ผ่านเบราว์เซอร์ (ทุกเครื่องพิมพ์)</option>
+              <option value="bluetooth">บลูทูธ (Android/iOS)</option>
+            </select>
+          </div>
+          {shop.printerConn==='bluetooth' && (
+            <div className="notice notice-amber" style={{fontSize:12}}>
+              📱 การพิมพ์ผ่านบลูทูธ: เปิดแอปในเบราว์เซอร์บนโทรศัพท์ แล้วกดปุ่มพิมพ์ — ระบบจะเชื่อมต่อเครื่องพิมพ์บลูทูธที่จับคู่ไว้อัตโนมัติผ่าน Web Bluetooth API (รองรับ Chrome/Android)
+            </div>
+          )}
+          <div className="notice" style={{background:'#F0FDF4',border:'1px solid #BBF7D0',color:'#166534',fontSize:12}}>
+            ✅ รองรับเครื่องพิมพ์ความร้อนทุกรุ่นที่มีไดรเวอร์ Windows/Mac — เพียงตั้งค่าขนาดกระดาษให้ตรง แล้วกดพิมพ์ผ่านเบราว์เซอร์ได้เลย
+          </div>
+        </div>
+
+        <button type="submit" className="btn btn-primary" style={{width:'100%'}}>
+          {saved ? '✓ บันทึกแล้ว!' : 'บันทึกการตั้งค่า'}
+        </button>
+      </form>
+    </div>
+  );
+}
+
+// ── Users ─────────────────────────────────────────────────────────────────────
+function UsersPage({ session }) {
+  const [users, setUsers] = useState(()=>loadDB().users);
+  const [editing, setEditing] = useState(null);
+  const [isNew, setIsNew] = useState(false);
+
+  function startNew(){ setEditing({id:null,name:'',email:'',password:'',role:'staff',active:true}); setIsNew(true); }
+  function startEdit(u){ setEditing({...u,password:''}); setIsNew(false); }
+  function cancel(){ setEditing(null); setIsNew(false); }
+  function save(){
+    if(!editing.name.trim()||!editing.email.trim()) return;
+    if(isNew&&!editing.password) return;
+    mutateDB(db=>{
+      if(isNew) db.users.push({...editing,id:'u'+Date.now()});
+      else { const i=db.users.findIndex(u=>u.id===editing.id); if(i>=0){ if(!editing.password) delete editing.password; db.users[i]={...db.users[i],...editing}; } }
+    });
+    setUsers(loadDB().users); setEditing(null); setIsNew(false);
+  }
+  function del(id){
+    if(id===session.userId){ alert('ไม่สามารถลบบัญชีตัวเองได้'); return; }
+    if(!confirm('ลบผู้ใช้งานนี้?')) return;
+    mutateDB(db=>{ db.users=db.users.filter(u=>u.id!==id); });
+    setUsers(loadDB().users);
+  }
+  return (
+    <div className="space-y" style={{maxWidth:600}}>
+      <div className="flex items-center justify-between">
+        <h1 style={{fontSize:20,fontWeight:700}}>จัดการพนักงาน</h1>
+        <button onClick={startNew} className="btn btn-primary"><PlusIcon/>เพิ่มผู้ใช้งาน</button>
+      </div>
+      {editing && (
+        <div className="card p-4 space-y-sm" style={{border:'2px solid #C7D2FE'}}>
+          <h2 style={{fontSize:13,fontWeight:600}}>{isNew?'เพิ่มผู้ใช้งานใหม่':'แก้ไขผู้ใช้งาน'}</h2>
+          <div>
+            <label className="label">ชื่อ-นามสกุล</label>
+            <input value={editing.name} onChange={e=>setEditing(p=>({...p,name:e.target.value}))} className="input" autoFocus/>
+          </div>
+          <div className="grid2">
+            <div>
+              <label className="label">อีเมล</label>
+              <input type="email" value={editing.email} onChange={e=>setEditing(p=>({...p,email:e.target.value}))} className="input"/>
+            </div>
+            <div>
+              <label className="label">{isNew?'รหัสผ่าน':'รหัสผ่านใหม่ (เว้นว่างหากไม่เปลี่ยน)'}</label>
+              <input type="password" value={editing.password} onChange={e=>setEditing(p=>({...p,password:e.target.value}))} className="input" placeholder={isNew?'อย่างน้อย 6 ตัวอักษร':'(ไม่เปลี่ยน)'}/>
+            </div>
+          </div>
+          <div className="grid2">
+            <div>
+              <label className="label">บทบาท</label>
+              <select value={editing.role} onChange={e=>setEditing(p=>({...p,role:e.target.value}))} className="input">
+                <option value="owner">เจ้าของร้าน</option>
+                <option value="staff">พนักงาน</option>
+              </select>
+            </div>
+            <div style={{display:'flex',alignItems:'center',gap:8,paddingTop:20}}>
+              <input type="checkbox" id="ua" checked={editing.active} onChange={e=>setEditing(p=>({...p,active:e.target.checked}))} style={{width:16,height:16,accentColor:'#4F63D2'}}/>
+              <label htmlFor="ua" style={{fontSize:13,cursor:'pointer'}}>เปิดใช้งาน</label>
+            </div>
+          </div>
+          <div style={{display:'flex',gap:8,justifyContent:'flex-end'}}>
+            <button onClick={cancel} className="btn btn-secondary btn-sm"><XIcon/>ยกเลิก</button>
+            <button onClick={save} className="btn btn-primary btn-sm"><CheckIcon/>บันทึก</button>
+          </div>
+        </div>
+      )}
+      <div className="card">
+        {users.map(u=>(
+          <div key={u.id} style={{display:'flex',alignItems:'center',gap:12,padding:'13px 16px',borderBottom:'1px solid #F9FAFB',opacity:u.active?1:.5}}>
+            <div className="avatar">{u.name[0]}</div>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{display:'flex',alignItems:'center',gap:6,flexWrap:'wrap'}}>
+                <span style={{fontWeight:500,fontSize:13}}>{u.name}</span>
+                <span className={`badge ${u.role==='owner'?'badge-purple':'badge-gray'}`} style={{fontSize:11}}>
+                  {u.role==='owner'?'เจ้าของร้าน':'พนักงาน'}
+                </span>
+                {!u.active && <span className="badge badge-red" style={{fontSize:11}}>ปิดใช้งาน</span>}
+                {u.id===session.userId && <span className="badge badge-blue" style={{fontSize:11}}>คุณ</span>}
+              </div>
+              <p style={{fontSize:11,color:'#9CA3AF',marginTop:2}}>{u.email}</p>
+            </div>
+            <div style={{display:'flex',gap:4}}>
+              <button onClick={()=>startEdit(u)} className="icon-btn"><EditIcon/></button>
+              <button onClick={()=>del(u.id)} className="icon-btn danger"><TrashIcon/></button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Mount ────────────────────────────────────────────────────────────────────
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
